@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЭкоБот Приложение</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Подключаем Telegram Web App API -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div id="main-screen" class="screen">
+        <h1>ЭкоМир 🌿</h1>
+        <div class="stats-card">
+            <p>Твои баллы</p>
+            <h2 id="user-points">0</h2>
+        </div>
+        <button class="action-btn">Я сделал доброе дело!</button>
+    </div>
+
+    <div id="events-screen" class="screen" style="display:none;">
+        <h1>Мероприятия 📅</h1>
+        <p>Загружаем события...</p>
+    </div>
+
+    <!-- Нижнее меню (Таб-бар) -->
+    <nav class="bottom-nav">
+        <button onclick="showScreen('main')">🏠 Главная</button>
+        <button onclick="showScreen('events')">📍 События</button>
+        <button onclick="showScreen('tips')">💡 Советы</button>
+        <button onclick="showScreen('profile')">👤 Профиль</button>
+    </nav>
+
+    <script src="script.js"></script>
+</body>
+</html>
