@@ -8,16 +8,30 @@ const tipsData = {
     "Зачем сдавать батарейки?": "Одна батарейка загрязняет 20 квадратных метров земли тяжелыми металлами. Сдавайте их в специальные боксы в магазинах!"
 };
 
-// 1. ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ
-function showScreen(screenId) {
+// 1. УЛУЧШЕННАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ
+function showScreen(screenId, element) {
+    // Тактильный отклик (Haptic Feedback) — эффект "дорогого" приложения [web:18]
+    if (tg.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred('medium');
+    }
+
+    // Скрываем все экраны
     const screens = document.querySelectorAll('.screen');
     screens.forEach(s => s.style.display = 'none');
 
+    // Показываем нужный
     const target = document.getElementById(screenId);
     if (target) {
         target.style.display = 'block';
     }
 
+    // Управление активным состоянием кнопок в таб-баре
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    if (element) {
+        element.classList.add('active');
+    }
+
+    // Если это экран событий, загружаем данные
     if (screenId === 'events-screen') {
         loadEvents();
     }
@@ -26,9 +40,12 @@ function showScreen(screenId) {
 // 2. ФУНКЦИИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ
 function openFullTip() {
     const title = document.getElementById('random-tip-title').innerText;
-    document.getElementById('modal-title').innerText = title;
-    document.getElementById('modal-body').innerText = tipsData[title] || "Подробности скоро появятся...";
-    document.getElementById('tip-modal').style.display = 'block';
+    const modal = document.getElementById('tip-modal');
+    if (modal) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-body').innerText = tipsData[title] || "Подробности скоро появятся...";
+        modal.style.display = 'flex'; // Используем flex для центрирования
+    }
 }
 
 function closeFullTip() {
@@ -36,18 +53,21 @@ function closeFullTip() {
 }
 
 function completeTask() {
+    // Взаимодействие с главной кнопкой Telegram
     tg.MainButton.setText("Задание выполнено! 🎉");
     tg.MainButton.show();
+    if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+
     setTimeout(() => tg.MainButton.hide(), 3000);
     alert("Отлично! Вы стали чуточку экологичнее. +5 к настроению 🌿");
 }
 
-// 3. ФУНКЦИЯ ЗАГРУЗКИ СОБЫТИЙ (МЕРОПРИЯТИЙ)
+// 3. ФУНКЦИЯ ЗАГРУЗКИ СОБЫТИЙ (С ТВОИМ ДИЗАЙНОМ ИСПРАВЛЕННЫМ ПОД GLASS)
 async function loadEvents() {
     const listContainer = document.getElementById('events-list');
     if (!listContainer) return;
 
-    listContainer.innerHTML = '<p>Загрузка...</p>';
+    listContainer.innerHTML = '<div class="glass-card"><p>Загрузка событий...</p></div>';
 
     try {
         const response = await fetch('events.json?v=' + Math.random());
@@ -57,7 +77,7 @@ async function loadEvents() {
         listContainer.innerHTML = '';
 
         if (events.length === 0) {
-            listContainer.innerHTML = '<p>Событий пока нет.</p>';
+            listContainer.innerHTML = '<div class="glass-card"><p>Событий пока нет.</p></div>';
             return;
         }
 
@@ -65,23 +85,34 @@ async function loadEvents() {
             const card = document.createElement('a');
             card.href = event.link;
             card.target = "_blank";
+            card.className = 'glass-card'; // Используем новый класс дизайна
+            card.style.display = 'block';
             card.style.textDecoration = 'none';
+            card.style.color = 'inherit';
 
             card.innerHTML = `
-                <div style="background: #a9a9a9; border-radius: 15px; padding: 15px; margin: 15px 0; color: black; border: 1px solid #888;">
-                    <h3 style="margin: 0; font-size: 18px;">${event.title}</h3>
-                    <p style="margin: 8px 0 0; font-size: 14px;">📍 ${event.city} | ⏰ ${event.time}</p>
-                </div>
+                <h3 style="margin: 0; font-size: 18px; color: var(--mint);">${event.title}</h3>
+                <p style="margin: 12px 0 0; font-size: 14px; opacity: 0.8;">
+                    📍 ${event.city} <br> ⏰ ${event.time}
+                </p>
+                <div style="margin-top: 15px; font-size: 12px; color: var(--mint); opacity: 0.6;">Подробнее →</div>
             `;
             listContainer.appendChild(card);
         });
     } catch (e) {
-        listContainer.innerHTML = '<p>Ошибка загрузки событий.</p>';
-        console.error(e);
+        listContainer.innerHTML = '<div class="glass-card"><p>Ошибка загрузки событий.</p></div>';
+        console.error("Ошибка загрузки событий:", e);
     }
 }
 
-// Запуск при старте
+// ЗАПУСК ПРИ СТАРТЕ
 window.onload = () => {
-    showScreen('main-screen');
+    // Инициализация иконок Lucide [web:78]
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
+
+    // Показываем главный экран и помечаем первую кнопку как активную
+    const homeBtn = document.querySelector('.nav-item');
+    showScreen('main-screen', homeBtn);
 };

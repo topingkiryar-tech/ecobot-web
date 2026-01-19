@@ -2,61 +2,57 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ЭкоБот Приложение</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>EcoBot Premium</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Иконки Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <div class="bg-glow"></div> <!-- Тот самый мягкий свет на фоне -->
+
     <div id="main-screen" class="screen">
-    <!-- Блок статуса города -->
-    <div class="city-status">
-        <span id="city-name">Раменское</span>:
-        <span id="air-quality" class="status-good">🍃 Чистый воздух</span>
-    </div>
+        <header class="main-header">
+            <div class="user-info">
+                <span class="username">@SnazzyChi...</span>
+                <div class="city-tag" id="city-name">Раменское</div>
+            </div>
+            <div class="status-icon">🍃</div>
+        </header>
 
-    <!-- Основной совет (Виджет) -->
-    <div class="tip-widget" onclick="openFullTip()">
-        <p class="widget-label">Эко-совет дня</p>
-        <h3 id="random-tip-title">Как сортировать пластик?</h3>
-        <span>Нажми, чтобы узнать больше →</span>
-    </div>
+        <div class="glass-card tip-widget" onclick="openFullTip()">
+            <div class="card-label">ЭКО-СОВЕТ ДНЯ</div>
+            <h3 id="random-tip-title">Как сортировать пластик?</h3>
+            <p class="card-desc">Нажми, чтобы изучить маркировки</p>
+        </div>
 
-    <!-- Задание дня -->
-    <div class="daily-task-card">
-        <h3>Задание на сегодня</h3>
-        <p id="daily-task-text">Откажитесь от кофе в одноразовом стаканчике</p>
-        <button class="done-btn" onclick="completeTask()">Я сделал!</button>
-    </div>
-
-    <!-- Модальное окно (скрыто по умолчанию) -->
-    <div id="tip-modal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close" onclick="closeFullTip()">&times;</span>
-            <h2 id="modal-title"></h2>
-            <div id="modal-body"></div>
+        <div class="glass-card daily-task">
+            <span class="task-label">ЗАДАНИЕ НА СЕГОДНЯ</span>
+            <p id="daily-task-text">Откажитесь от кофе в пластике</p>
+            <button class="mint-btn" onclick="completeTask()">Выполнено</button>
         </div>
     </div>
-</div>
 
-
-    <!-- ЭКРАН СОБЫТИЙ -->
     <div id="events-screen" class="screen" style="display:none;">
-        <h1>Мероприятия 📅</h1>
+        <h1 class="screen-title">Мероприятия</h1>
         <div id="events-list"></div>
     </div>
 
-    <!-- ЭКРАНЫ-ЗАГЛУШКИ (чтобы кнопки не ломали код) -->
-    <div id="tips-screen" class="screen" style="display:none;"><h1>Советы 💡</h1></div>
-    <div id="profile-screen" class="screen" style="display:none;"><h1>Профиль 👤</h1></div>
-
-    <!-- НИЖНЕЕ МЕНЮ -->
+    <!-- Тот самый парящий таб-бар -->
     <nav class="bottom-nav">
-        <button onclick="showScreen('main-screen')">🏠 Главная</button>
-        <button onclick="showScreen('events-screen')">📍 События</button>
-        <button onclick="showScreen('tips-screen')">💡 Советы</button>
-        <button onclick="showScreen('profile-screen')">👤 Профиль</button>
+        <button class="nav-item active" onclick="showScreen('main-screen', this)">
+            <i data-lucide="home"></i>
+        </button>
+        <button class="nav-item" onclick="showScreen('events-screen', this)">
+            <i data-lucide="calendar"></i>
+        </button>
+        <button class="nav-item" onclick="showScreen('tips-screen', this)">
+            <i data-lucide="lightbulb"></i>
+        </button>
+        <button class="nav-item" onclick="showScreen('profile-screen', this)">
+            <i data-lucide="user"></i>
+        </button>
     </nav>
 
     <script src="script.js"></script>
