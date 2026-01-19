@@ -1,14 +1,68 @@
 [
-  {
-    "title": "Эко-фестиваль в парке",
-    "city": "Москва",
-    "time": "12:00",
-    "link": "https://google.com"
-  },
-  {
-    "title": "Сбор макулатуры",
-    "city": "Раменское",
-    "time": "10:00",
-    "link": "https://ya.ru"
-  }
+    {
+        "title": "Съедобное покрытие из белка сохраняет фрукты свежими дольше",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/sedobnoe-pokritie-belka-sohranyaet-frukti-svezhimi-dolshe"
+    },
+    {
+        "title": "Камчатские студенты вызволили из сугробов приюты для собак",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/kamchatskie-studenti-vizvolili-sugrobov-priyuti-sobak"
+    },
+    {
+        "title": "Алтайские ученые изобретают новый фильтр из отходов улиточных ферм",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/altaiskie-uchenie-izobretayut-novii-filtr-othodov-ulitochnih"
+    },
+    {
+        "title": "Плато Путорана очистят от свалок",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/plato-putorana-ochistyat-svalok"
+    },
+    {
+        "title": "Ученые разлагают пластик в Азовском море с помощью жуков",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/uchenie-razlagayut-plastik-azovskom-pomoschyu-zhukov"
+    },
+    {
+        "title": "Жительница Перми спасла цаплю, вмерзшую в лед",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/zhitelnitsa-permi-spasla-tsaplyu-vmerzshuyu"
+    },
+    {
+        "title": "Ученые: воздух в деревне загрязнен микропластиком сильнее",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/uchenie-vozduh-derevne-zagryaznen-mikroplastikom-silnee"
+    },
+    {
+        "title": "Немецкие аэропорты приютили собак, испугавшихся салютов",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/nemetskie-aeroporti-priyutili-sobak-ispugavshihsya-salyutov"
+    },
+    {
+        "title": "Исследование: полиэтиленовая пленка угрожает сельскому хозяйству",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/issledovanie-polietilenovaya-plenka-ugrozhaet-selskomu-hozyaistvu"
+    },
+    {
+        "title": "В шести арктических регионах России развернут «Медвежий патруль»",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/shesti-arkticheskih-regionah-rossii-razvernut-medvezhii-patrul"
+    },
+    {
+        "title": "В Москве начали принимать новогодние елки на переработку",
+        "time": "Январь",
+        "city": "Россия",
+        "link": "https://recyclemag.ru/news/moskve-nachali-prinimat-novogodnie-pererabotku"
+    }
 ]
