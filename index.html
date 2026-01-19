@@ -10,13 +10,36 @@
 <body>
     <!-- ГЛАВНЫЙ ЭКРАН -->
     <div id="main-screen" class="screen">
-        <h1>ЭкоМир 🌿</h1>
-        <div class="stats-card">
-            <p>Твои баллы</p>
-            <h2 id="user-points">0</h2>
-        </div>
-        <button class="action-btn">Я сделал доброе дело!</button>
+    <!-- Блок статуса города -->
+    <div class="city-status">
+        <span id="city-name">Раменское</span>:
+        <span id="air-quality" class="status-good">🍃 Чистый воздух</span>
     </div>
+
+    <!-- Основной совет (Виджет) -->
+    <div class="tip-widget" onclick="openFullTip()">
+        <p class="widget-label">Эко-совет дня</p>
+        <h3 id="random-tip-title">Как сортировать пластик?</h3>
+        <span>Нажми, чтобы узнать больше →</span>
+    </div>
+
+    <!-- Задание дня -->
+    <div class="daily-task-card">
+        <h3>Задание на сегодня</h3>
+        <p id="daily-task-text">Откажитесь от кофе в одноразовом стаканчике</p>
+        <button class="done-btn" onclick="completeTask()">Я сделал!</button>
+    </div>
+
+    <!-- Модальное окно (скрыто по умолчанию) -->
+    <div id="tip-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeFullTip()">&times;</span>
+            <h2 id="modal-title"></h2>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+</div>
+
 
     <!-- ЭКРАН СОБЫТИЙ -->
     <div id="events-screen" class="screen" style="display:none;">

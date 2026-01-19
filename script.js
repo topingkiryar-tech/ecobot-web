@@ -1,28 +1,48 @@
 // Инициализация Telegram Web App
 const tg = window.Telegram.WebApp;
-tg.expand(); // Развернуть на весь экран
+tg.expand();
 
+// Данные для советов (тестовые)
+const tipsData = {
+    "Как сортировать пластик?": "На пластиковых изделиях ищите треугольник с цифрой. 1 и 2 принимают почти везде, а 3 и 7 — почти нигде. Перед сдачей обязательно сполосните тару!",
+    "Зачем сдавать батарейки?": "Одна батарейка загрязняет 20 квадратных метров земли тяжелыми металлами. Сдавайте их в специальные боксы в магазинах!"
+};
+
+// 1. ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ
 function showScreen(screenId) {
-    // 1. Скрываем все экраны
     const screens = document.querySelectorAll('.screen');
-    screens.forEach(s => {
-        s.style.display = 'none';
-    });
+    screens.forEach(s => s.style.display = 'none');
 
-    // 2. Показываем нужный экран
     const target = document.getElementById(screenId);
     if (target) {
         target.style.display = 'block';
-    } else {
-        console.error("Экран не найден:", screenId);
     }
 
-    // 3. Если это экран событий, загружаем данные
     if (screenId === 'events-screen') {
         loadEvents();
     }
 }
 
+// 2. ФУНКЦИИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ
+function openFullTip() {
+    const title = document.getElementById('random-tip-title').innerText;
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-body').innerText = tipsData[title] || "Подробности скоро появятся...";
+    document.getElementById('tip-modal').style.display = 'block';
+}
+
+function closeFullTip() {
+    document.getElementById('tip-modal').style.display = 'none';
+}
+
+function completeTask() {
+    tg.MainButton.setText("Задание выполнено! 🎉");
+    tg.MainButton.show();
+    setTimeout(() => tg.MainButton.hide(), 3000);
+    alert("Отлично! Вы стали чуточку экологичнее. +5 к настроению 🌿");
+}
+
+// 3. ФУНКЦИЯ ЗАГРУЗКИ СОБЫТИЙ (МЕРОПРИЯТИЙ)
 async function loadEvents() {
     const listContainer = document.getElementById('events-list');
     if (!listContainer) return;
@@ -30,12 +50,11 @@ async function loadEvents() {
     listContainer.innerHTML = '<p>Загрузка...</p>';
 
     try {
-        // Добавляем случайное число в конце, чтобы файл не кэшировался
         const response = await fetch('events.json?v=' + Math.random());
         if (!response.ok) throw new Error('Файл не найден');
-        
+
         const events = await response.json();
-        listContainer.innerHTML = ''; 
+        listContainer.innerHTML = '';
 
         if (events.length === 0) {
             listContainer.innerHTML = '<p>Событий пока нет.</p>';
@@ -47,7 +66,7 @@ async function loadEvents() {
             card.href = event.link;
             card.target = "_blank";
             card.style.textDecoration = 'none';
-            
+
             card.innerHTML = `
                 <div style="background: #a9a9a9; border-radius: 15px; padding: 15px; margin: 15px 0; color: black; border: 1px solid #888;">
                     <h3 style="margin: 0; font-size: 18px;">${event.title}</h3>
@@ -57,12 +76,12 @@ async function loadEvents() {
             listContainer.appendChild(card);
         });
     } catch (e) {
-        listContainer.innerHTML = '<p>Ошибка: убедитесь, что файл events.json загружен на GitHub.</p>';
-        console.error("Ошибка загрузки событий:", e);
+        listContainer.innerHTML = '<p>Ошибка загрузки событий.</p>';
+        console.error(e);
     }
 }
 
-// Показываем главный экран при загрузке страницы
+// Запуск при старте
 window.onload = () => {
     showScreen('main-screen');
 };
