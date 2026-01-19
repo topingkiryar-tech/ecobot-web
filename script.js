@@ -1,15 +1,23 @@
-function showScreen(screenId) {
-    // Прячем вообще все блоки, у которых есть класс screen
-    const screens = document.querySelectorAll('.screen');
-    screens.forEach(s => s.style.display = 'none');
+// Инициализация Telegram Web App
+const tg = window.Telegram.WebApp;
+tg.expand(); // Развернуть на весь экран
 
-    // Показываем тот блок, на который нажали
-    const activeScreen = document.getElementById(screenId);
-    if (activeScreen) {
-        activeScreen.style.display = 'block';
+function showScreen(screenId) {
+    // 1. Скрываем все экраны
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(s => {
+        s.style.display = 'none';
+    });
+
+    // 2. Показываем нужный экран
+    const target = document.getElementById(screenId);
+    if (target) {
+        target.style.display = 'block';
+    } else {
+        console.error("Экран не найден:", screenId);
     }
 
-    // Если открыли события — загружаем их
+    // 3. Если это экран событий, загружаем данные
     if (screenId === 'events-screen') {
         loadEvents();
     }
@@ -19,26 +27,42 @@ async function loadEvents() {
     const listContainer = document.getElementById('events-list');
     if (!listContainer) return;
 
+    listContainer.innerHTML = '<p>Загрузка...</p>';
+
     try {
-        const response = await fetch('events.json');
+        // Добавляем случайное число в конце, чтобы файл не кэшировался
+        const response = await fetch('events.json?v=' + Math.random());
+        if (!response.ok) throw new Error('Файл не найден');
+        
         const events = await response.json();
         listContainer.innerHTML = ''; 
+
+        if (events.length === 0) {
+            listContainer.innerHTML = '<p>Событий пока нет.</p>';
+            return;
+        }
 
         events.forEach(event => {
             const card = document.createElement('a');
             card.href = event.link;
             card.target = "_blank";
-            card.style.textDecoration = 'none'; // Убираем синее подчеркивание
+            card.style.textDecoration = 'none';
             
             card.innerHTML = `
-                <div style="background: #a9a9a9; border-radius: 15px; padding: 20px; margin: 15px 0; color: black;">
-                    <h3 style="margin: 0;">${event.title}</h3>
-                    <p style="margin: 10px 0 0;"><b>${event.city} ${event.time}</b></p>
+                <div style="background: #a9a9a9; border-radius: 15px; padding: 15px; margin: 15px 0; color: black; border: 1px solid #888;">
+                    <h3 style="margin: 0; font-size: 18px;">${event.title}</h3>
+                    <p style="margin: 8px 0 0; font-size: 14px;">📍 ${event.city} | ⏰ ${event.time}</p>
                 </div>
             `;
             listContainer.appendChild(card);
         });
     } catch (e) {
-        listContainer.innerHTML = '<p>События пока не загружены. Убедитесь, что файл events.json есть на GitHub.</p>';
+        listContainer.innerHTML = '<p>Ошибка: убедитесь, что файл events.json загружен на GitHub.</p>';
+        console.error("Ошибка загрузки событий:", e);
     }
 }
+
+// Показываем главный экран при загрузке страницы
+window.onload = () => {
+    showScreen('main-screen');
+};
