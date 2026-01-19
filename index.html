@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ЭкоБот Приложение</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Подключаем Telegram Web App API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
+    <!-- ГЛАВНЫЙ ЭКРАН -->
     <div id="main-screen" class="screen">
         <h1>ЭкоМир 🌿</h1>
         <div class="stats-card">
@@ -18,17 +18,22 @@
         <button class="action-btn">Я сделал доброе дело!</button>
     </div>
 
+    <!-- ЭКРАН СОБЫТИЙ -->
     <div id="events-screen" class="screen" style="display:none;">
         <h1>Мероприятия 📅</h1>
-        <p>Загружаем события...</p>
+        <div id="events-list"></div>
     </div>
 
-    <!-- Нижнее меню (Таб-бар) -->
+    <!-- ЭКРАНЫ-ЗАГЛУШКИ (чтобы кнопки не ломали код) -->
+    <div id="tips-screen" class="screen" style="display:none;"><h1>Советы 💡</h1></div>
+    <div id="profile-screen" class="screen" style="display:none;"><h1>Профиль 👤</h1></div>
+
+    <!-- НИЖНЕЕ МЕНЮ -->
     <nav class="bottom-nav">
-        <button onclick="showScreen('main')">🏠 Главная</button>
-        <button onclick="showScreen('events')">📍 События</button>
-        <button onclick="showScreen('tips')">💡 Советы</button>
-        <button onclick="showScreen('profile')">👤 Профиль</button>
+        <button onclick="showScreen('main-screen')">🏠 Главная</button>
+        <button onclick="showScreen('events-screen')">📍 События</button>
+        <button onclick="showScreen('tips-screen')">💡 Советы</button>
+        <button onclick="showScreen('profile-screen')">👤 Профиль</button>
     </nav>
 
     <script src="script.js"></script>
