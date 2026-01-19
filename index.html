@@ -6,20 +6,33 @@
     <title>EcoBot Premium</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Иконки Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <div class="bg-glow"></div> <!-- Тот самый мягкий свет на фоне -->
+    <div class="bg-glow"></div>
 
+    <!-- ГЛАВНЫЙ ЭКРАН -->
     <div id="main-screen" class="screen">
-        <header class="main-header">
-            <div class="user-info">
-                <span class="username">@SnazzyChi...</span>
-                <div class="city-tag" id="city-name">Раменское</div>
+        <header class="premium-header">
+            <div class="location-box">
+                <i data-lucide="map-pin"></i>
+                <span id="city-name">Куркино</span>
             </div>
-            <div class="status-icon">🍃</div>
+            <div class="user-avatar-mini">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=EcoHero" alt="Avatar">
+            </div>
         </header>
+
+        <div class="eco-status-widget">
+            <div class="status-info">
+                <span class="status-label">ЭКО-СТАТУС ГОРОДА</span>
+                <h2 class="status-value">Прекрасно</h2>
+            </div>
+            <div class="status-indicator">
+                <div class="pulse-ring"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
 
         <div class="glass-card tip-widget" onclick="openFullTip()">
             <div class="card-label">ЭКО-СОВЕТ ДНЯ</div>
@@ -32,14 +45,28 @@
             <p id="daily-task-text">Откажитесь от кофе в пластике</p>
             <button class="mint-btn" onclick="completeTask()">Выполнено</button>
         </div>
+
+        <!-- Модальное окно для советов -->
+        <div id="tip-modal" class="modal" style="display:none;">
+            <div class="modal-content glass-card">
+                <span class="close" onclick="closeFullTip()">&times;</span>
+                <h2 id="modal-title" style="color: var(--mint);"></h2>
+                <p id="modal-body" style="line-height: 1.6; margin-top: 15px; opacity: 0.9;"></p>
+            </div>
+        </div>
     </div>
 
+    <!-- ЭКРАН СОБЫТИЙ -->
     <div id="events-screen" class="screen" style="display:none;">
-        <h1 class="screen-title">Мероприятия</h1>
+        <h1 style="color: var(--mint); margin-bottom: 20px;">Мероприятия</h1>
         <div id="events-list"></div>
     </div>
 
-    <!-- Тот самый парящий таб-бар -->
+    <!-- ЗАГЛУШКИ -->
+    <div id="tips-screen" class="screen" style="display:none;"><h1>Советы 💡</h1></div>
+    <div id="profile-screen" class="screen" style="display:none;"><h1>Профиль 👤</h1></div>
+
+    <!-- ТАБ-БАР -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="showScreen('main-screen', this)">
             <i data-lucide="home"></i>
