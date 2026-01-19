@@ -1,48 +1,44 @@
-// Функция для переключения вкладок (экранов)
 function showScreen(screenId) {
-    // Прячем все экраны
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-    });
-    // Показываем нужный
-    document.getElementById(screenId).classList.add('active');
+    // Прячем вообще все блоки, у которых есть класс screen
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(s => s.style.display = 'none');
 
-    // Если открыли экран событий — загружаем их из файла
+    // Показываем тот блок, на который нажали
+    const activeScreen = document.getElementById(screenId);
+    if (activeScreen) {
+        activeScreen.style.display = 'block';
+    }
+
+    // Если открыли события — загружаем их
     if (screenId === 'events-screen') {
         loadEvents();
     }
 }
 
-// ФУНКЦИЯ ЗАГРУЗКИ МЕРОПРИЯТИЙ (Тот самый функционал)
 async function loadEvents() {
-    const container = document.getElementById('events-screen');
-    
+    const listContainer = document.getElementById('events-list');
+    if (!listContainer) return;
+
     try {
-        // 1. Пытаемся взять файл events.json с GitHub
         const response = await fetch('events.json');
         const events = await response.json();
-        
-        // Очищаем экран и добавляем заголовок
-        container.innerHTML = '<h1>Мероприятия 📅</h1>';
-        
-        // 2. Создаем плашки для каждого мероприятия
+        listContainer.innerHTML = ''; 
+
         events.forEach(event => {
             const card = document.createElement('a');
-            card.href = event.link; // Ссылка на сайт
-            card.target = "_blank"; // Открыть в новом окне
-            card.className = 'event-card'; // Класс для стиля (плашки)
+            card.href = event.link;
+            card.target = "_blank";
+            card.style.textDecoration = 'none'; // Убираем синее подчеркивание
             
-            // Как выглядит карточка внутри
             card.innerHTML = `
-                <div style="background: #e0e0e0; padding: 15px; margin: 10px; border-radius: 12px; color: black; text-decoration: none;">
-                    <h3 style="margin: 0; font-size: 18px;">${event.title}</h3>
-                    <p style="margin: 5px 0 0;">${event.city} | <b>${event.time}</b></p>
+                <div style="background: #a9a9a9; border-radius: 15px; padding: 20px; margin: 15px 0; color: black;">
+                    <h3 style="margin: 0;">${event.title}</h3>
+                    <p style="margin: 10px 0 0;"><b>${event.city} ${event.time}</b></p>
                 </div>
             `;
-            container.appendChild(card);
+            listContainer.appendChild(card);
         });
-    } catch (error) {
-        container.innerHTML = '<h1>Мероприятия 📅</h1><p>Ой, не удалось загрузить данные...</p>';
-        console.error("Ошибка загрузки:", error);
+    } catch (e) {
+        listContainer.innerHTML = '<p>События пока не загружены. Убедитесь, что файл events.json есть на GitHub.</p>';
     }
 }
