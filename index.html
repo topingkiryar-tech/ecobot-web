@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>EcoBot Premium</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -13,68 +12,56 @@
 
     <div id="main-screen" class="screen">
         <header class="premium-header">
-            <div class="location-box" onclick="changeCity()">
+            <div class="location-box" onclick="tg.showAlert('Выбор города скоро будет доступен!')">
                 <i data-lucide="map-pin"></i>
-                <span id="city-name">Куркино</span>
+                <span>Куркино</span>
             </div>
-            <!-- Красный круг убран, здесь теперь пусто для чистоты -->
         </header>
 
         <div class="top-grid">
-            <div class="glass-card status-mini">
-                <span class="label">СТАТУС</span>
-                <div class="status-content">
-                    <h2 class="mint-text">Прекрасно</h2>
-                    <div class="mini-pulse"></div>
+            <!-- Статус как в Погоде -->
+            <div class="glass-card status-box">
+                <span class="label">ЭКО-СТАТУС</span>
+                <div class="status-visual">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        <path class="circle" stroke-dasharray="90, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <div class="status-text">92</div>
                 </div>
+                <p class="status-desc">Прекрасно</p>
             </div>
-            <div class="glass-card task-mini">
+
+            <!-- Задание -->
+            <div class="glass-card task-box">
                 <span class="label">ЗАДАНИЕ</span>
-                <p id="daily-task-short">Без кофе в пластике</p>
-                <div id="task-timer" style="display:none;">00:00:00</div>
+                <p id="task-name">Без кофе в пластике</p>
+                <button class="mini-done-btn" onclick="completeTask()">Я сделал!</button>
+                <div id="task-timer" style="display:none;"></div>
             </div>
         </div>
 
-        <div class="glass-card eco-tips-widget" onclick="openFullTip()">
+        <div class="glass-card tip-wide" onclick="openFullTip()">
             <div class="card-header">
                 <span class="label">ЭКО-СОВЕТЫ</span>
-                <i data-lucide="chevron-right" class="mint-text"></i>
+                <i data-lucide="arrow-right-circle" class="mint"></i>
             </div>
-            <div class="tip-of-day">
-                <h3 id="random-tip-title">Как сортировать пластик?</h3>
-                <p class="tip-short-desc">Маркировки 1, 2 и 5 — самые безопасные для переработки...</p>
-            </div>
+            <h3 id="random-tip-title">Как сортировать пластик?</h3>
+            <p class="tip-preview">Маркировки 1, 2 и 5 — самые безопасные...</p>
         </div>
-
-        <button class="mint-btn main-action" onclick="completeTask()">Я сделал доброе дело!</button>
     </div>
 
-    <!-- Экраны событий и карты -->
     <div id="events-screen" class="screen" style="display:none;">
-        <h1 class="mint-text">Мероприятия</h1>
+        <h1 class="screen-title">Мероприятия</h1>
         <div id="events-list"></div>
     </div>
-    <div id="map-screen" class="screen" style="display:none;">
-        <h1 class="mint-text">Эко-Карта</h1>
-        <p>Раздел в разработке...</p>
-    </div>
 
-    <!-- ТАБ-БАР: Главная с анимацией и Карта -->
     <nav class="bottom-nav">
-        <button class="nav-item main-nav active" onclick="showScreen('main-screen', this)">
-            <i data-lucide="home"></i>
-        </button>
-        <button class="nav-item" onclick="showScreen('events-screen', this)">
-            <i data-lucide="calendar"></i>
-        </button>
-        <button class="nav-item" onclick="showScreen('map-screen', this)">
-            <i data-lucide="map"></i>
-        </button>
-        <button class="nav-item" onclick="showScreen('profile-screen', this)">
-            <i data-lucide="user"></i>
-        </button>
+        <button class="nav-item main-nav active" onclick="showScreen('main-screen', this)"><i data-lucide="home"></i></button>
+        <button class="nav-item" onclick="showScreen('events-screen', this)"><i data-lucide="calendar"></i></button>
+        <button class="nav-item" onclick="showScreen('map-screen', this)"><i data-lucide="map"></i></button>
+        <button class="nav-item" onclick="showScreen('profile-screen', this)"><i data-lucide="user"></i></button>
     </nav>
-
     <script src="script.js"></script>
 </body>
 </html>
