@@ -11,71 +11,64 @@
 <body>
     <div class="bg-glow"></div>
 
-    <!-- ГЛАВНЫЙ ЭКРАН -->
     <div id="main-screen" class="screen">
         <header class="premium-header">
-            <div class="location-box">
+            <div class="location-box" onclick="changeCity()">
                 <i data-lucide="map-pin"></i>
                 <span id="city-name">Куркино</span>
             </div>
-            <div class="user-avatar-mini">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=EcoHero" alt="Avatar">
-            </div>
+            <!-- Красный круг убран, здесь теперь пусто для чистоты -->
         </header>
 
-        <div class="eco-status-widget">
-            <div class="status-info">
-                <span class="status-label">ЭКО-СТАТУС ГОРОДА</span>
-                <h2 class="status-value">Прекрасно</h2>
+        <div class="top-grid">
+            <div class="glass-card status-mini">
+                <span class="label">СТАТУС</span>
+                <div class="status-content">
+                    <h2 class="mint-text">Прекрасно</h2>
+                    <div class="mini-pulse"></div>
+                </div>
             </div>
-            <div class="status-indicator">
-                <div class="pulse-ring"></div>
-                <div class="dot"></div>
+            <div class="glass-card task-mini">
+                <span class="label">ЗАДАНИЕ</span>
+                <p id="daily-task-short">Без кофе в пластике</p>
+                <div id="task-timer" style="display:none;">00:00:00</div>
             </div>
         </div>
 
-        <div class="glass-card tip-widget" onclick="openFullTip()">
-            <div class="card-label">ЭКО-СОВЕТ ДНЯ</div>
-            <h3 id="random-tip-title">Как сортировать пластик?</h3>
-            <p class="card-desc">Нажми, чтобы изучить маркировки</p>
-        </div>
-
-        <div class="glass-card daily-task">
-            <span class="task-label">ЗАДАНИЕ НА СЕГОДНЯ</span>
-            <p id="daily-task-text">Откажитесь от кофе в пластике</p>
-            <button class="mint-btn" onclick="completeTask()">Выполнено</button>
-        </div>
-
-        <!-- Модальное окно для советов -->
-        <div id="tip-modal" class="modal" style="display:none;">
-            <div class="modal-content glass-card">
-                <span class="close" onclick="closeFullTip()">&times;</span>
-                <h2 id="modal-title" style="color: var(--mint);"></h2>
-                <p id="modal-body" style="line-height: 1.6; margin-top: 15px; opacity: 0.9;"></p>
+        <div class="glass-card eco-tips-widget" onclick="openFullTip()">
+            <div class="card-header">
+                <span class="label">ЭКО-СОВЕТЫ</span>
+                <i data-lucide="chevron-right" class="mint-text"></i>
+            </div>
+            <div class="tip-of-day">
+                <h3 id="random-tip-title">Как сортировать пластик?</h3>
+                <p class="tip-short-desc">Маркировки 1, 2 и 5 — самые безопасные для переработки...</p>
             </div>
         </div>
+
+        <button class="mint-btn main-action" onclick="completeTask()">Я сделал доброе дело!</button>
     </div>
 
-    <!-- ЭКРАН СОБЫТИЙ -->
+    <!-- Экраны событий и карты -->
     <div id="events-screen" class="screen" style="display:none;">
-        <h1 style="color: var(--mint); margin-bottom: 20px;">Мероприятия</h1>
+        <h1 class="mint-text">Мероприятия</h1>
         <div id="events-list"></div>
     </div>
+    <div id="map-screen" class="screen" style="display:none;">
+        <h1 class="mint-text">Эко-Карта</h1>
+        <p>Раздел в разработке...</p>
+    </div>
 
-    <!-- ЗАГЛУШКИ -->
-    <div id="tips-screen" class="screen" style="display:none;"><h1>Советы 💡</h1></div>
-    <div id="profile-screen" class="screen" style="display:none;"><h1>Профиль 👤</h1></div>
-
-    <!-- ТАБ-БАР -->
+    <!-- ТАБ-БАР: Главная с анимацией и Карта -->
     <nav class="bottom-nav">
-        <button class="nav-item active" onclick="showScreen('main-screen', this)">
+        <button class="nav-item main-nav active" onclick="showScreen('main-screen', this)">
             <i data-lucide="home"></i>
         </button>
         <button class="nav-item" onclick="showScreen('events-screen', this)">
             <i data-lucide="calendar"></i>
         </button>
-        <button class="nav-item" onclick="showScreen('tips-screen', this)">
-            <i data-lucide="lightbulb"></i>
+        <button class="nav-item" onclick="showScreen('map-screen', this)">
+            <i data-lucide="map"></i>
         </button>
         <button class="nav-item" onclick="showScreen('profile-screen', this)">
             <i data-lucide="user"></i>
