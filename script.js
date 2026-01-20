@@ -1,101 +1,106 @@
-// 1. Демо-данные для мероприятий (чтобы экран не был пустым)
+// 1. Демо-данные
 const demoEvents = [
     { title: "Сбор пластика в Куркино", date: "25 Января, 12:00", location: "Парк Дубрава", category: "Волонтерство" },
     { title: "Лекция: Zero Waste", date: "28 Января, 18:30", location: "Библиотека №211", category: "Обучение" }
 ];
 
-// 2. Управление экранами и Таб-баром
+// 2. Управление экранами
 function showScreen(screenId) {
-    // Скрываем все экраны
-    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+    const screens = document.querySelectorAll('.screen');
+    const tabs = document.querySelectorAll('.tab');
 
-    // Показываем целевой
+    screens.forEach(s => s.style.display = 'none');
+    tabs.forEach(t => t.classList.remove('active'));
+
     const target = document.getElementById(screenId);
-    if (target) target.style.display = 'block';
+    if (target) {
+        target.style.display = 'block';
+    }
 
-    // ПРАВКА БАГА: Снимаем активный класс со всех кнопок
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-
-    // Находим кнопку, на которую нажали, и делаем её активной
     const activeTab = document.querySelector(`[onclick="showScreen('${screenId}')"]`);
-    if (activeTab) activeTab.classList.add('active');
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
 
-    // Тактильный отклик
     if (window.Telegram?.WebApp?.HapticFeedback) {
         Telegram.WebApp.HapticFeedback.impactOccurred('light');
     }
 
-    // Если перешли на экран мероприятий, отрисовываем их
-    if (screenId === 'events') renderEvents();
+    // Если перешли на экран мероприятий - отрисовываем
+    if (screenId === 'events-screen') {
+        renderEvents();
+    }
 }
 
 // 3. Отрисовка мероприятий
 function renderEvents() {
-    const container = document.getElementById('events-list'); // Убедись, что в HTML есть этот ID
-    if (!container) return;
+    const container = document.getElementById('events-list');
+    if (!container) {
+        console.error("Контейнер events-list не найден!");
+        return;
+    }
 
     container.innerHTML = demoEvents.map(event => `
-        <div class="glass-card card" style="margin-bottom: 12px;">
-            <div class="label">${event.category}</div>
-            <h3 style="margin: 8px 0;">${event.title}</h3>
-            <p style="font-size: 14px; opacity: 0.6; margin: 4px 0;">📍 ${event.location}</p>
-            <div style="color: var(--mint); font-weight: 700; margin-top: 8px;">${event.date}</div>
+        <div class="glass-card card" style="margin-bottom: 12px; padding: 20px; border-radius: 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+            <div class="label" style="color: var(--mint); font-size: 10px; font-weight: 800;">${event.category}</div>
+            <h3 style="margin: 10px 0; font-size: 18px;">${event.title}</h3>
+            <p style="font-size: 14px; opacity: 0.7; margin: 5px 0;">📍 ${event.location}</p>
+            <div style="color: var(--mint); font-weight: 700; margin-top: 10px;">${event.date}</div>
         </div>
     `).join('');
 }
 
-// 4. Логика выполнения задания
+// 4. Логика задания
 function completeTask() {
+    const expiry = Date.now() + 24 * 60 * 60 * 1000;
+    localStorage.setItem('task_expiry', expiry);
+    updateTaskUI(expiry);
+}
+
+function updateTaskUI(expiry) {
     const btn = document.getElementById('complete-btn');
     const timerDisplay = document.getElementById('task-timer');
 
-    // Устанавливаем время истечения (через 24 часа)
-    const expiry = Date.now() + 24 * 60 * 60 * 1000;
-    localStorage.setItem('task_expiry', expiry);
-
-    // Меняем кнопку на таймер
-    btn.style.display = 'none';
-    timerDisplay.style.display = 'block';
-
-    startTimer(expiry);
-
-    if (window.Telegram?.WebApp?.HapticFeedback) {
-        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+    if (expiry && expiry > Date.now()) {
+        if (btn) btn.style.display = 'none';
+        if (timerDisplay) {
+            timerDisplay.style.display = 'block';
+            startTimer(expiry);
+        }
     }
 }
 
-// 5. Работа таймера
 function startTimer(expiry) {
     const timerDisplay = document.getElementById('task-timer');
-
     const interval = setInterval(() => {
-        const now = Date.now();
-        const diff = expiry - now;
-
+        const diff = expiry - Date.now();
         if (diff <= 0) {
             clearInterval(interval);
-            document.getElementById('complete-btn').style.display = 'block';
-            timerDisplay.style.display = 'none';
-            localStorage.removeItem('task_expiry');
+            location.reload(); // Перезагружаем для сброса задания
             return;
         }
-
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
         const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-
         timerDisplay.textContent = `${h}:${m}:${s}`;
     }, 1000);
 }
 
-// 6. Проверка состояния при запуске
-window.onload = () => {
-    const savedExpiry = localStorage.getItem('task_expiry');
-    if (savedExpiry && savedExpiry > Date.now()) {
-        document.getElementById('complete-btn').style.display = 'none';
-        document.getElementById('task-timer').style.display = 'block';
-        startTimer(parseInt(savedExpiry));
+// 5. ГЛАВНАЯ ИНИЦИАЛИЗАЦИЯ (Решает проблему пустого экрана)
+document.addEventListener('DOMContentLoaded', () => {
+    // Сообщаем Telegram, что мы готовы
+    if (window.Telegram?.WebApp) {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand(); // Разворачиваем на весь экран
     }
-    // Показываем главный экран по умолчанию
-    showScreen('home');
-};
+
+    // Проверяем статус задания
+    const savedExpiry = localStorage.getItem('task_expiry');
+    if (savedExpiry) updateTaskUI(parseInt(savedExpiry));
+
+    // Инициализируем иконки Lucide
+    if (window.lucide) lucide.createIcons();
+
+    // ПОКАЗЫВАЕМ ПЕРВЫЙ ЭКРАН
+    showScreen('main-screen');
+});
