@@ -1,25 +1,252 @@
-:root { --mint: #c1ff72; --glass: rgba(255, 255, 255, 0.05); }
-body { background: #000; color: #fff; font-family: -apple-system, sans-serif; margin: 0; }
-.bg-glow { position: fixed; top: 0; right: 0; width: 300px; height: 300px; background: radial-gradient(circle, rgba(193, 255, 114, 0.1) 0%, transparent 70%); filter: blur(60px); z-index: -1; }
-.screen { padding: 20px; height: 100vh; box-sizing: border-box; overflow-y: auto; padding-bottom: 120px; }
-.app-header { margin-bottom: 20px; }
-.location-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--glass); padding: 8px 16px; border-radius: 20px; color: var(--mint); border: 1px solid rgba(255,255,255,0.1); }
-.top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-.glass-card { background: var(--glass); backdrop-filter: blur(30px); border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); padding: 20px; }
-.status-box, .task-box { height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; }
-.label { font-size: 10px; font-weight: 800; color: var(--mint); opacity: 0.6; letter-spacing: 1px; }
-.visual-circle { position: relative; width: 70px; height: 70px; }
-.chart .b { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 3; }
-.chart .c { fill: none; stroke: var(--mint); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 92, 100; }
-.num { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: 800; color: var(--mint); }
-.status-title { font-size: 18px; font-weight: 600; }
-.action-btn { background: var(--mint); border: none; padding: 12px; width: 100%; border-radius: 14px; font-weight: 800; }
-.dual-tips { padding: 0; overflow: hidden; }
-.tips-header { padding: 20px; display: flex; justify-content: space-between; }
-.divider { height: 1px; background: rgba(255,255,255,0.1); margin: 0 20px; }
-.tips-body { padding: 20px; }
-.tips-body h3 { color: var(--mint); margin: 8px 0; }
-.tab-bar { position: fixed; bottom: 30px; left: 5%; width: 90%; height: 65px; background: rgba(20,20,20,0.95); backdrop-filter: blur(20px); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
-.tab { background: none; border: none; color: #444; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-.tab.active { background: var(--mint); color: #000; transform: translateY(-10px); box-shadow: 0 10px 20px rgba(193,255,114,0.3); }
-.tab svg { width: 24px; height: 24px; pointer-events: none; }
+:root {
+    --mint: #c1ff72;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --bg-dark: #000000;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background: var(--bg-dark);
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* Фоновое свечение */
+.bg-glow {
+    position: fixed;
+    top: -50px;
+    right: -50px;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(193, 255, 114, 0.15) 0%, transparent 70%);
+    filter: blur(80px);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Контейнер экрана */
+.screen {
+    padding: 20px;
+    min-height: 100vh;
+    padding-bottom: 140px; /* Увеличенный отступ, чтобы Tab Bar ничего не закрывал */
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 10px 0 25px 0;
+    letter-spacing: -0.5px;
+}
+
+.app-header {
+    margin-bottom: 25px;
+}
+
+.location-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    padding: 10px 18px;
+    border-radius: 25px;
+    color: var(--mint);
+    border: 1px solid var(--glass-border);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Сетка карточек */
+.top-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border-radius: 30px;
+    border: 1px solid var(--glass-border);
+    padding: 22px;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.glass-card:active {
+    transform: scale(0.97); /* Эффект нажатия */
+}
+
+.status-box, .task-box {
+    height: 190px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.label {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--mint);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.8;
+}
+
+/* Эко-индекс (Круг) */
+.visual-circle {
+    position: relative;
+    width: 85px;
+    height: 85px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart .b {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-width: 4;
+}
+
+.chart .c {
+    fill: none;
+    stroke: var(--mint);
+    stroke-width: 4;
+    stroke-linecap: round;
+    /* Анимация наполнения круга */
+    stroke-dasharray: 92, 100;
+    filter: drop-shadow(0 0 8px rgba(193, 255, 114, 0.5));
+}
+
+.num {
+    position: absolute;
+    font-size: 24px;
+    font-weight: 850;
+    color: var(--mint);
+}
+
+.status-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+/* Кнопка действия */
+.action-btn {
+    background: var(--mint);
+    color: #000;
+    border: none;
+    padding: 14px;
+    width: 100%;
+    border-radius: 18px;
+    font-weight: 800;
+    font-size: 15px;
+    box-shadow: 0 8px 20px rgba(193, 255, 114, 0.2);
+    cursor: pointer;
+}
+
+/* База знаний / Совет дня */
+.dual-tips {
+    padding: 0;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.tips-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    margin: 0 20px;
+}
+
+.tips-body {
+    padding: 24px;
+}
+
+.tips-body h3 {
+    color: var(--mint);
+    font-size: 20px;
+    margin: 0 0 12px 0;
+}
+
+.tips-body p {
+    margin: 0;
+    line-height: 1.5;
+    opacity: 0.8;
+    font-size: 15px;
+}
+
+/* TAB BAR (Навигация) */
+.tab-bar {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: 450px;
+    height: 75px;
+    background: rgba(15, 15, 15, 0.8);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border-radius: 40px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+}
+
+.tab {
+    background: none;
+    border: none;
+    color: #555;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.tab.active {
+    color: #000;
+}
+
+/* Кружок-подложка для активного таба */
+.tab.active::after {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: var(--mint);
+    border-radius: 50%;
+    z-index: -1;
+    box-shadow: 0 8px 15px rgba(193, 255, 114, 0.3);
+}
+
+.tab svg {
+    width: 26px;
+    height: 26px;
+    z-index: 2;
+}
