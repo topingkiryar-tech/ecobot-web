@@ -1,102 +1,101 @@
-const tg = window.Telegram.WebApp;
-tg.expand();
+// 1. Демо-данные для мероприятий (чтобы экран не был пустым)
+const demoEvents = [
+    { title: "Сбор пластика в Куркино", date: "25 Января, 12:00", location: "Парк Дубрава", category: "Волонтерство" },
+    { title: "Лекция: Zero Waste", date: "28 Января, 18:30", location: "Библиотека №211", category: "Обучение" }
+];
 
-// 1. ПРОВЕРКА СОСТОЯНИЯ ЗАДАНИЯ ПРИ ЗАПУСКЕ
-function checkTaskStatus() {
-    const lastClick = localStorage.getItem('lastTaskCompleted');
-    const timerDisplay = document.getElementById('task-timer');
-    const btn = document.querySelector('.mini-done-btn');
+// 2. Управление экранами и Таб-баром
+function showScreen(screenId) {
+    // Скрываем все экраны
+    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
 
-    if (lastClick) {
-        const lastDate = new Date(parseInt(lastClick)).toDateString();
-        const today = new Date().toDateString();
+    // Показываем целевой
+    const target = document.getElementById(screenId);
+    if (target) target.style.display = 'block';
 
-        // Если сегодня уже нажимали — показываем таймер вместо кнопки
-        if (lastDate === today) {
-            if (btn) btn.style.display = 'none';
-            if (timerDisplay) {
-                timerDisplay.style.display = 'block';
-                startMidnightTimer();
-            }
-        }
+    // ПРАВКА БАГА: Снимаем активный класс со всех кнопок
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+
+    // Находим кнопку, на которую нажали, и делаем её активной
+    const activeTab = document.querySelector(`[onclick="showScreen('${screenId}')"]`);
+    if (activeTab) activeTab.classList.add('active');
+
+    // Тактильный отклик
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('light');
     }
+
+    // Если перешли на экран мероприятий, отрисовываем их
+    if (screenId === 'events') renderEvents();
 }
 
-// 2. ЛОГИКА ВЫПОЛНЕНИЯ (БЕЗ АЛЕРТОВ)
+// 3. Отрисовка мероприятий
+function renderEvents() {
+    const container = document.getElementById('events-list'); // Убедись, что в HTML есть этот ID
+    if (!container) return;
+
+    container.innerHTML = demoEvents.map(event => `
+        <div class="glass-card card" style="margin-bottom: 12px;">
+            <div class="label">${event.category}</div>
+            <h3 style="margin: 8px 0;">${event.title}</h3>
+            <p style="font-size: 14px; opacity: 0.6; margin: 4px 0;">📍 ${event.location}</p>
+            <div style="color: var(--mint); font-weight: 700; margin-top: 8px;">${event.date}</div>
+        </div>
+    `).join('');
+}
+
+// 4. Логика выполнения задания
 function completeTask() {
-    if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-
-    // Сохраняем время нажатия
-    localStorage.setItem('lastTaskCompleted', Date.now().toString());
-
-    const btn = document.querySelector('.mini-done-btn');
+    const btn = document.getElementById('complete-btn');
     const timerDisplay = document.getElementById('task-timer');
 
-    // Плавная анимация скрытия кнопки
-    if (btn) {
-        btn.innerText = "Принято! ✨";
-        btn.style.background = "#fff";
-        setTimeout(() => {
-            btn.style.display = 'none';
-            if (timerDisplay) {
-                timerDisplay.style.display = 'block';
-                startMidnightTimer();
-            }
-        }, 1000);
+    // Устанавливаем время истечения (через 24 часа)
+    const expiry = Date.now() + 24 * 60 * 60 * 1000;
+    localStorage.setItem('task_expiry', expiry);
+
+    // Меняем кнопку на таймер
+    btn.style.display = 'none';
+    timerDisplay.style.display = 'block';
+
+    startTimer(expiry);
+
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
     }
 }
 
-// 3. ТАЙМЕР ДО ПОЛНОЧИ
-function startMidnightTimer() {
-    const timerElement = document.getElementById('task-timer');
+// 5. Работа таймера
+function startTimer(expiry) {
+    const timerDisplay = document.getElementById('task-timer');
 
-    function update() {
-        const now = new Date();
-        const midnight = new Date();
-        midnight.setHours(24, 0, 0, 0);
+    const interval = setInterval(() => {
+        const now = Date.now();
+        const diff = expiry - now;
 
-        const diff = midnight - now;
         if (diff <= 0) {
-            localStorage.removeItem('lastTaskCompleted');
-            location.reload();
+            clearInterval(interval);
+            document.getElementById('complete-btn').style.display = 'block';
+            timerDisplay.style.display = 'none';
+            localStorage.removeItem('task_expiry');
             return;
         }
 
-        const h = Math.floor(diff / 3600000);
-        const m = Math.floor((diff % 3600000) / 60000);
-        const s = Math.floor((diff % 60000) / 1000);
+        const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+        const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+        const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
 
-        timerElement.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
-    update();
-    setInterval(update, 1000);
+        timerDisplay.textContent = `${h}:${m}:${s}`;
+    }, 1000);
 }
 
-// 4. НАВИГАЦИЯ И ЗАГРУЗКА
-function showScreen(screenId, element) {
-    if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-    document.getElementById(screenId).style.display = 'block';
-    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-    if (element) element.classList.add('active');
-    if (screenId === 'events-screen') loadEvents();
-}
-
+// 6. Проверка состояния при запуске
 window.onload = () => {
-    // 1. Активируем иконки (без этого будут пустые квадраты)
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
+    const savedExpiry = localStorage.getItem('task_expiry');
+    if (savedExpiry && savedExpiry > Date.now()) {
+        document.getElementById('complete-btn').style.display = 'none';
+        document.getElementById('task-timer').style.display = 'block';
+        startTimer(parseInt(savedExpiry));
     }
-
-    // 2. Проверяем, не нажимал ли пользователь кнопку сегодня
-    if (typeof checkTaskStatus === 'function') {
-        checkTaskStatus();
-    }
-
-    // 3. Показываем главный экран и делаем первую иконку активной
-    const firstTab = document.querySelector('.tab');
-    if (typeof showScreen === 'function') {
-        showScreen('main-screen', firstTab);
-    }
+    // Показываем главный экран по умолчанию
+    showScreen('home');
 };
-
