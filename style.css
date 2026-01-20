@@ -1,37 +1,25 @@
 :root { --mint: #c1ff72; --glass: rgba(255, 255, 255, 0.05); }
-
 body { background: #000; color: #fff; font-family: -apple-system, sans-serif; margin: 0; }
-
-.screen { padding: 25px; height: 100vh; box-sizing: border-box; overflow-y: auto; padding-bottom: 120px; }
-
-/* Виджеты 50/50 */
-.top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-
-.glass-card { background: var(--glass); backdrop-filter: blur(25px); border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); padding: 20px; }
-
+.bg-glow { position: fixed; top: 0; right: 0; width: 300px; height: 300px; background: radial-gradient(circle, rgba(193, 255, 114, 0.1) 0%, transparent 70%); filter: blur(60px); z-index: -1; }
+.screen { padding: 20px; height: 100vh; box-sizing: border-box; overflow-y: auto; padding-bottom: 120px; }
+.app-header { margin-bottom: 20px; }
+.location-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--glass); padding: 8px 16px; border-radius: 20px; color: var(--mint); border: 1px solid rgba(255,255,255,0.1); }
+.top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+.glass-card { background: var(--glass); backdrop-filter: blur(30px); border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); padding: 20px; }
 .status-box, .task-box { height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; }
-
-.label { font-size: 10px; font-weight: 800; opacity: 0.5; color: var(--mint); letter-spacing: 1px; }
-
-/* Эко-статус */
-.status-visual { position: relative; width: 70px; height: 70px; }
-.circle-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 3.5; }
-.circle { fill: none; stroke: var(--mint); stroke-width: 3.5; stroke-linecap: round; }
-.status-number { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: 900; color: var(--mint); }
-.status-title { font-size: 18px; margin: 0; color: #fff; }
-
-/* Задание */
-#daily-task-text { font-size: 15px; font-weight: 500; margin: 10px 0; }
-.task-footer { width: 100%; }
-.mini-done-btn { background: var(--mint); border: none; padding: 12px; width: 100%; border-radius: 14px; font-weight: 800; color: #000; }
-
-/* Советы разделенные */
-.eco-tips-container { padding: 0; overflow: hidden; }
-.tips-nav { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); }
-.line-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 0 20px; }
-.tip-content { padding: 20px; }
-.tip-content h3 { font-size: 20px; margin: 10px 0; color: var(--mint); }
-.tip-content p { font-size: 14px; opacity: 0.7; line-height: 1.5; margin: 0; }
-
-/* Мероприятия */
-.event-card { margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
+.label { font-size: 10px; font-weight: 800; color: var(--mint); opacity: 0.6; letter-spacing: 1px; }
+.visual-circle { position: relative; width: 70px; height: 70px; }
+.chart .b { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 3; }
+.chart .c { fill: none; stroke: var(--mint); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 92, 100; }
+.num { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: 800; color: var(--mint); }
+.status-title { font-size: 18px; font-weight: 600; }
+.action-btn { background: var(--mint); border: none; padding: 12px; width: 100%; border-radius: 14px; font-weight: 800; }
+.dual-tips { padding: 0; overflow: hidden; }
+.tips-header { padding: 20px; display: flex; justify-content: space-between; }
+.divider { height: 1px; background: rgba(255,255,255,0.1); margin: 0 20px; }
+.tips-body { padding: 20px; }
+.tips-body h3 { color: var(--mint); margin: 8px 0; }
+.tab-bar { position: fixed; bottom: 30px; left: 5%; width: 90%; height: 65px; background: rgba(20,20,20,0.95); backdrop-filter: blur(20px); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+.tab { background: none; border: none; color: #444; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+.tab.active { background: var(--mint); color: #000; transform: translateY(-10px); box-shadow: 0 10px 20px rgba(193,255,114,0.3); }
+.tab svg { width: 24px; height: 24px; pointer-events: none; }

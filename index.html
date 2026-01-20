@@ -2,71 +2,64 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <div class="bg-glow"></div>
-
     <div id="main-screen" class="screen">
-        <header class="premium-header">
-            <div class="location-box" onclick="tg.showAlert('Выбор города будет доступен в следующем обновлении!')">
-                <i data-lucide="map-pin"></i>
-                <span id="city-name">Куркино</span>
+        <header class="app-header">
+            <div class="location-chip">
+                <i data-lucide="map-pin"></i><span>Куркино</span>
             </div>
         </header>
 
         <div class="top-grid">
             <div class="glass-card status-box">
                 <span class="label">ЭКО-СТАТУС</span>
-                <div class="status-visual">
-                    <svg viewBox="0 0 36 36" class="circular-chart">
-                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                        <path class="circle" stroke-dasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                    </svg>
-                    <div class="status-number">92</div>
+                <div class="visual-circle">
+                    <svg viewBox="0 0 36 36" class="chart"><path class="b" d="M18 2 a 16 16 0 0 1 0 32 a 16 16 0 0 1 0 -32"/><path class="c" d="M18 2 a 16 16 0 0 1 0 32 a 16 16 0 0 1 0 -32"/></svg>
+                    <div class="num">92</div>
                 </div>
-                <h2 class="status-title">Прекрасно</h2>
+                <div class="status-title">Прекрасно</div>
             </div>
 
             <div class="glass-card task-box">
-                <span class="label">ЗАДАНИЕ ДНЯ</span>
-                <p id="daily-task-text">Без кофе в пластике сегодня</p>
-                <div class="task-footer">
-                    <button class="mini-done-btn" onclick="completeTask()">Я сделал!</button>
+                <span class="label">ЗАДАНИЕ</span>
+                <p id="daily-task-text">Без кофе в пластике</p>
+                <div class="task-ctrl">
+                    <button class="action-btn" onclick="completeTask()">Я сделал!</button>
                     <div id="task-timer" style="display:none;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Разделенный виджет советов -->
-        <div class="glass-card eco-tips-container">
-            <div class="tips-nav" onclick="showScreen('tips-screen')">
+        <div class="glass-card dual-tips">
+            <div class="tips-header" onclick="showScreen('tips-screen')">
                 <span class="label">БАЗА ЗНАНИЙ</span>
-                <i data-lucide="external-link" class="mint"></i>
+                <i data-lucide="arrow-right"></i>
             </div>
-            <div class="line-divider"></div>
-            <div class="tip-content" onclick="openFullTip()">
+            <div class="divider"></div>
+            <div class="tips-body">
                 <span class="label">СОВЕТ ДНЯ</span>
                 <h3 id="random-tip-title">Как сортировать пластик?</h3>
-                <p id="tip-full-desc">Маркировки 1, 2 и 5 — самые безопасные для переработки. Перед сдачей обязательно сполосните тару водой!</p>
+                <p id="tip-full-desc">Маркировки 1, 2 и 5 — самые безопасные для переработки. Сполосните тару перед сдачей.</p>
             </div>
         </div>
     </div>
 
     <div id="events-screen" class="screen" style="display:none;">
-        <h1 class="mint" style="font-size: 32px; margin-bottom: 20px;">Мероприятия</h1>
+        <h1 class="title">Мероприятия</h1>
         <div id="events-list"></div>
     </div>
 
-    <!-- ТАБ-БАР -->
-    <nav class="bottom-nav">
-        <button class="nav-item main-nav active" onclick="showScreen('main-screen', this)"><i data-lucide="home"></i></button>
-        <button class="nav-item" onclick="showScreen('events-screen', this)"><i data-lucide="calendar"></i></button>
-        <button class="nav-item" onclick="showScreen('map-screen', this)"><i data-lucide="map"></i></button>
-        <button class="nav-item" onclick="showScreen('profile-screen', this)"><i data-lucide="user"></i></button>
+    <nav class="tab-bar">
+        <button class="tab active" onclick="showScreen('main-screen', this)"><i data-lucide="home"></i></button>
+        <button class="tab" onclick="showScreen('events-screen', this)"><i data-lucide="calendar"></i></button>
+        <button class="tab" onclick="showScreen('map-screen', this)"><i data-lucide="map"></i></button>
+        <button class="tab" onclick="showScreen('profile-screen', this)"><i data-lucide="user"></i></button>
     </nav>
     <script src="script.js"></script>
 </body>

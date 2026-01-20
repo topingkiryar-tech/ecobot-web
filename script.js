@@ -82,18 +82,21 @@ function showScreen(screenId, element) {
     if (screenId === 'events-screen') loadEvents();
 }
 
-// ИНИЦИАЛИЗАЦИЯ
 window.onload = () => {
-    if (window.lucide) lucide.createIcons();
+    // 1. Активируем иконки (без этого будут пустые квадраты)
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 
-    // Анимация кольца эко-статуса
-    setTimeout(() => {
-        const circle = document.querySelector('.circle');
-        if (circle) circle.style.strokeDasharray = "92, 100";
-    }, 500);
+    // 2. Проверяем, не нажимал ли пользователь кнопку сегодня
+    if (typeof checkTaskStatus === 'function') {
+        checkTaskStatus();
+    }
 
-    checkTaskStatus(); // Проверяем таймер при входе
-    showScreen('main-screen', document.querySelector('.main-nav'));
+    // 3. Показываем главный экран и делаем первую иконку активной
+    const firstTab = document.querySelector('.tab');
+    if (typeof showScreen === 'function') {
+        showScreen('main-screen', firstTab);
+    }
 };
 
-// ... функция loadEvents остается без изменений ...
