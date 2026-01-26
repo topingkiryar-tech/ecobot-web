@@ -251,16 +251,31 @@ h1 {
     z-index: 2;
 }
 
+/* ВОЗВРАЩАЕМ ТОТ САМЫЙ СТИЛЬ ЗАГОЛОВКА */
+.map-title {
+    font-size: 28px;
+    font-weight: 800;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 24px;
+    border: 1px solid rgba(193, 255, 114, 0.3);
+    margin: 20px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
 /* Карта с правильной обводкой */
 .map-container {
-    width: 100%;
+    width: calc(100% - 40px); /* Учитываем маргины */
     height: 400px;
-    margin: 20px 0;
+    margin: 0 20px 20px 20px;
     border-radius: 32px;
     overflow: hidden;
     position: relative;
     background: rgba(255,255,255,0.03);
-    /* ФИКС: Убеждаемся, что контейнер не ломает поток документа */
     display: block;
 }
 
@@ -280,29 +295,16 @@ h1 {
 .leaflet-container,
 #map-container > ymaps,
 #map-container {
-    z-index: 1 !important; /* Понизили, чтобы не перекрывал Tab Bar (у которого z-index 1000) */
+    z-index: 1 !important;
     border-radius: 32px !important;
 }
 
-/* Новый стиль заголовка */
-.map-title {
-    font-size: 28px;
-    font-weight: 800;
-    padding: 24px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 24px;
-    border: 1px solid rgba(193,255,114,0.3);
-    margin: 20px;
-    text-align: center;
-    backdrop-filter: blur(15px);
-}
-
-/* Кнопка снизу — ИСПРАВЛЕНО: убрали absolute, чтобы она не "летала" по всему приложению */
+/* Кнопка снизу - сохраняем стиль, правим позицию */
 .map-btn {
-    position: relative; /* Изменено с absolute на relative */
-    margin: 10px auto 100px; /* Добавлен отступ снизу 100px, чтобы не закрывал Tab Bar */
+    position: relative;
+    margin: 10px auto 120px; /* Отступ 120px для чистого скролла над Tab Bar */
     display: block;
-    width: 90%;
+    width: calc(90% - 40px);
     max-width: 350px;
     z-index: 2;
 }
