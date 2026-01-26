@@ -113,8 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // ДОБАВЛЕНО: Функции для работы с картой
 let ymap;
 
-let ymap;
-
 function initYandexMap() {
     if (ymap || typeof ymaps === 'undefined') return;
 
@@ -123,18 +121,12 @@ function initYandexMap() {
         zoom: 14
     });
 
-    // УЛУЧШЕННЫЙ ПОИСК (больше результатов)
-    Promise.all([
-        ymap.search('пункт приема вторсырья Куркино', {results: 15}),
-        ymap.search('контейнер переработки Куркино', {results: 10}),
-        ymap.search('эко пункт Куркино', {results: 10})
-    ]).then(([recycling, containers, eco]) => {
-        [recycling, containers, eco].forEach(result => {
-            result.geoObjects.options.set('preset', 'islands#greenIcon');
-            result.geoObjects.each(geo => ymap.geoObjects.add(geo));
-        });
-    }).catch(() => addStaticPoints());
+    // ПРОСТОЙ ПОИСК (стабильный)
+    ymap.search('пункт переработки', {results: 20}).done(result => {
+        result.geoObjects.each(geo => ymap.geoObjects.add(geo));
+    });
 }
+
 
 function locateMe() {
     if (!ymap) initYandexMap();

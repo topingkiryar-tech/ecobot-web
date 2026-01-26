@@ -254,23 +254,25 @@ h1 {
 /* Карта с правильной обводкой */
 .map-container {
     width: 100%;
-    height: 400px; /* было 450px, уменьшили чтобы кнопка влезала и можно было скроллить */
+    height: 400px;
     margin: 20px 0;
     border-radius: 32px;
     overflow: hidden;
     position: relative;
     background: rgba(255,255,255,0.03);
+    /* ФИКС: Убеждаемся, что контейнер не ломает поток документа */
+    display: block;
 }
 
-/* Обводка СНАРУЖИ (z-index не мешает касаниям) */
+/* Обводка СНАРУЖИ */
 .map-container::before {
     content: '';
     position: absolute;
-    inset: 4px; /* Отступ 4px со всех сторон */
+    inset: 4px;
     border: 2px solid var(--mint);
     border-radius: 28px;
-    z-index: 0; /* Под картой */
-    pointer-events: none; /* Не блокирует касания */
+    z-index: 0;
+    pointer-events: none;
     box-shadow: 0 0 25px rgba(193,255,114,0.4);
 }
 
@@ -278,7 +280,7 @@ h1 {
 .leaflet-container,
 #map-container > ymaps,
 #map-container {
-    z-index: 10 !important;
+    z-index: 1 !important; /* Понизили, чтобы не перекрывал Tab Bar (у которого z-index 1000) */
     border-radius: 32px !important;
 }
 
@@ -295,13 +297,13 @@ h1 {
     backdrop-filter: blur(15px);
 }
 
-/* Кнопка снизу */
+/* Кнопка снизу — ИСПРАВЛЕНО: убрали absolute, чтобы она не "летала" по всему приложению */
 .map-btn {
-    position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative; /* Изменено с absolute на relative */
+    margin: 10px auto 100px; /* Добавлен отступ снизу 100px, чтобы не закрывал Tab Bar */
+    display: block;
     width: 90%;
     max-width: 350px;
-    z-index: 1001; /* подняли над картой */
+    z-index: 2;
 }
+
