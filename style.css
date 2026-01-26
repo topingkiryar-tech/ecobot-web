@@ -254,7 +254,7 @@ h1 {
 /* Карта с правильной обводкой */
 .map-container {
     width: 100%;
-    height: 450px;
+    height: 400px; /* было 450px, уменьшили чтобы кнопка влезала и можно было скроллить */
     margin: 20px 0;
     border-radius: 32px;
     overflow: hidden;
@@ -274,9 +274,11 @@ h1 {
     box-shadow: 0 0 25px rgba(193,255,114,0.4);
 }
 
-/* Leaflet-контейнер поверх обводки */
-.leaflet-container {
-    z-index: 1 !important;
+/* Контейнер карты поверх обводки */
+.leaflet-container,
+#map-container > ymaps,
+#map-container {
+    z-index: 10 !important;
     border-radius: 32px !important;
 }
 
@@ -301,6 +303,5 @@ h1 {
     transform: translateX(-50%);
     width: 90%;
     max-width: 350px;
-    z-index: 1000;
+    z-index: 1001; /* подняли над картой */
 }
-
