@@ -40,10 +40,7 @@ function showScreen(screenId) {
 // 3. Отрисовка мероприятий
 function renderEvents() {
     const container = document.getElementById('events-list');
-    if (!container) {
-        console.error("Контейнер events-list не найден!");
-        return;
-    }
+    if (!container) return;
 
     container.innerHTML = demoEvents.map(event => `
         <div class="glass-card card" style="margin-bottom: 12px; padding: 20px; border-radius: 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
@@ -65,7 +62,6 @@ function completeTask() {
 function updateTaskUI(expiry) {
     const btn = document.getElementById('complete-btn');
     const timerDisplay = document.getElementById('task-timer');
-
     if (expiry && expiry > Date.now()) {
         if (btn) btn.style.display = 'none';
         if (timerDisplay) {
@@ -81,7 +77,7 @@ function startTimer(expiry) {
         const diff = expiry - Date.now();
         if (diff <= 0) {
             clearInterval(interval);
-            location.reload(); // Перезагружаем для сброса задания
+            location.reload();
             return;
         }
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
@@ -91,66 +87,63 @@ function startTimer(expiry) {
     }, 1000);
 }
 
-// 5. ГЛАВНАЯ ИНИЦИАЛИЗАЦИЯ (Решает проблему пустого экрана)
+// 5. ГЛАВНАЯ ИНИЦИАЛИЗАЦИЯ
 document.addEventListener('DOMContentLoaded', () => {
-    // Сообщаем Telegram, что мы готовы
     if (window.Telegram?.WebApp) {
         Telegram.WebApp.ready();
-        Telegram.WebApp.expand(); // Разворачиваем на весь экран
+        Telegram.WebApp.expand();
     }
-
-    // Проверяем статус задания
     const savedExpiry = localStorage.getItem('task_expiry');
     if (savedExpiry) updateTaskUI(parseInt(savedExpiry));
-
-    // Инициализируем иконки Lucide
     if (window.lucide) lucide.createIcons();
-
-    // ПОКАЗЫВАЕМ ПЕРВЫЙ ЭКРАН
     showScreen('main-screen');
 });
 
-// --- КАРТА ---
-
+// --- БЛОК КАРТЫ (ИСПРАВЛЕННЫЙ И БЕЗОПАСНЫЙ) ---
 let ymap;
-
-// Поиск пунктов переработки в пределах текущих границ карты
-function searchRecyclingPoints() {
-    if (!ymap || typeof ymaps === 'undefined') return;
-
-    // Удаляем все старые зеленые точки (оставляем только синюю метку пользователя)
-    const toRemove = [];
-    ymap.geoObjects.each(geo => {
-        const preset = geo.options.get('preset');
-        if (!preset || !preset.includes('blueCircleDotIcon')) {
-            toRemove.push(geo);
-        }
-    });
-    toRemove.forEach(g => ymap.geoObjects.remove(g));
-
-    ymaps.search('пункт приема вторсырья', {
-        boundedBy: ymap.getBounds(),
-        strictBounds: false,
-        results: 30
-    }).done(res => {
-        res.geoObjects.options.set('preset', 'islands#greenIcon');
-        ymap.geoObjects.add(res.geoObjects);
-        console.log('Найдено точек переработки:', res.geoObjects.getLength());
-    });
-}
 
 function initYandexMap() {
     if (ymap || typeof ymaps === 'undefined') return;
 
-    // Москва по умолчанию, если геолокации еще нет
     ymap = new ymaps.Map('map-container', {
-        center: [55.751574, 37.573856],
-        zoom: 12
+        center: [55.7515, 37.5738], // Москва
+        zoom: 12,
+        controls: []
     });
 
-    // Первичный поиск по умолчанию
-    searchRecyclingPoints();
+    // Однократный поиск при открытии
+    ymaps.search('пункт приема вторсырья', {
+        boundedBy: ymap.getBounds(),
+        results: 20
+    }).done(res => {
+        res.geoObjects.options.set('preset', 'islands#greenIcon');
+        ymap.geoObjects.add(res.geoObjects);
+    });
+}
 
-    // При каждом изменении границ (пользователь подвигал карту) обновляем точки
-    ymap.events.add('boundschange', () => {
-        searchRecyc
+function locateMe() {
+    if (!ymap) initYandexMap();
+
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            const coords = [pos.coords.latitude, pos.coords.longitude];
+            ymap.setCenter(coords, 14);
+
+            // Просто добавляем метку, не удаляя ничего (самый безопасный способ)
+            ymap.geoObjects.add(new ymaps.Placemark(coords, {
+                hintContent: 'Твоё местоположение'
+            }, { preset: 'islands#blueCircleDotIcon' }));
+
+            // Ищем пункты в новом месте
+            ymaps.search('пункт приема вторсырья', {
+                boundedBy: ymap.getBounds(),
+                results: 25
+            }).done(res => {
+                res.geoObjects.options.set('preset', 'islands#greenIcon');
+                ymap.geoObjects.add(res.geoObjects);
+            });
+        },
+        () => { alert('Геолокация недоступна'); },
+        { enableHighAccuracy: true, timeout: 5000 }
+    );
+}
