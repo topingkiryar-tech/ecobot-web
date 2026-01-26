@@ -78,16 +78,17 @@
 
     <!-- КАРТА -->
     <div id="map-screen" class="screen" style="display:none;">
-        <h1 style="padding: 0 24px; font-size: 32px;">Карта переработки 🗺️</h1>
-
-        <div class="glass-card" style="margin: 24px; padding: 20px; text-align: center;">
-            <button class="action-btn" onclick="getUserLocation()" style="width: 100%;">
-                📍 Показать ближайшие пункты
-            </button>
-        </div>
+        <!-- Новый стиль заголовка -->
+        <h1 class="map-title">🗺️ Пункты рядом</h1>
 
         <div id="map-container" class="map-container"></div>
+
+        <!-- Кнопка СНИЗУ -->
+        <button class="action-btn map-btn" onclick="locateMe()">
+            📍 Центр на меня
+        </button>
     </div>
+
 
     <!-- ЗАГЛУШКИ -->
     <div id="profile-screen" class="screen" style="display:none;">

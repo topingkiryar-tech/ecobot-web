@@ -122,26 +122,75 @@ function initYandexMap() {
         controls: []
     });
 
-    const points = [
-        { coords: [55.7932, 37.3681], title: "ЭкоПост", desc: "Пластик, стекло" },
-        { coords: [55.7891, 37.3645], title: "Зеленый двор", desc: "Бумага, металл" }
+    // АВТОМАТИЧЕСКИЙ ПОИСК ПУНКТОВ ПЕРЕРАБОТКИ
+    ymap.search('пункт приема вторсырья Куркино', {
+        results: 25, // 25 ближайших точек
+        type: 'biz', // Только бизнесы и организации
+        boundedBy: [[55.78, 37.35], [55.80, 37.38]] // Ограничение районом Куркино
+    }).done(function (searchResults) {
+        searchResults.geoObjects.options.set('preset', 'islands#greenIcon');
+        searchResults.geoObjects.each(function (geoObject) {
+            ymap.geoObjects.add(geoObject);
+        });
+
+        console.log('Найдено пунктов переработки:', searchResults.geoObjects.getLength());
+    }).fail(function (error) {
+        console.error('Ошибка поиска:', error);
+        // Fallback — статические точки
+        addStaticPoints();
+    });
+}
+
+// Резервные статические точки (если поиск не сработал)
+function addStaticPoints() {
+    const fallbackPoints = [
+        [55.7932, 37.3681, "ЭкоПост", "Пластик, стекло"],
+        [55.7891, 37.3645, "Зеленый двор", "Бумага, металл"]
     ];
 
-    points.forEach(point => {
-        ymap.geoObjects.add(new ymaps.Placemark(point.coords, {
-            hintContent: point.title,
-            balloonContent: `<b>${point.title}</b><br>${point.desc}`
+    fallbackPoints.forEach(([lat, lng, title, desc]) => {
+        ymap.geoObjects.add(new ymaps.Placemark([lat, lng], {
+            hintContent: title,
+            balloonContent: `<b>${title}</b><br>${desc}`
         }, { preset: 'islands#greenIcon' }));
     });
 }
 
+
 function locateMe() {
     if (!ymap) initYandexMap();
+
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-            const coords = [pos.coords.latitude, pos.coords.longitude];
-            ymap.setCenter(coords, 15);
-            ymap.geoObjects.add(new ymaps.Placemark(coords, {}, { preset: 'islands#blueCircleDotIcon' }));
-        });
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                const coords = [pos.coords.latitude, pos.coords.longitude];
+                ymap.setCenter(coords, 16);
+                ymap.setZoom(16);
+
+                // Удаляем старые метки пользователя
+                ymap.geoObjects.each(geo => {
+                    if (geo.options.get('preset') === 'islands#blueCircleDotIcon') {
+                        ymap.geoObjects.remove(geo);
+                    }
+                });
+
+                // Новая метка пользователя
+                const userMarker = new ymaps.Placemark(coords, {
+                    hintContent: 'Ты здесь',
+                    balloonContent: 'Твоё местоположение'
+                }, {
+                    preset: 'islands#blueCircleDotIcon',
+                    iconColor: '#00bfff'
+                });
+                ymap.geoObjects.add(userMarker);
+
+                Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+            },
+            () => {
+                Telegram.WebApp.showAlert('Центрируем на Куркино');
+                ymap.setCenter([55.7913, 37.3662], 14);
+            }
+        );
     }
 }
+
