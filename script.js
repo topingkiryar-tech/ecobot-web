@@ -31,7 +31,7 @@ function showScreen(screenId) {
         renderEvents();
     }
 
-    // ДОБАВЛЕНО: Если перешли на экран карты - запускаем Яндекс.Карты
+    // Если перешли на экран карты - запускаем Яндекс.Карты
     if (screenId === 'map-screen') {
         setTimeout(initYandexMap, 400);
     }
@@ -110,48 +110,47 @@ document.addEventListener('DOMContentLoaded', () => {
     showScreen('main-screen');
 });
 
-// ДОБАВЛЕНО: Функции для работы с картой
+// --- КАРТА ---
+
 let ymap;
+
+// Поиск пунктов переработки в пределах текущих границ карты
+function searchRecyclingPoints() {
+    if (!ymap || typeof ymaps === 'undefined') return;
+
+    // Удаляем все старые зеленые точки (оставляем только синюю метку пользователя)
+    const toRemove = [];
+    ymap.geoObjects.each(geo => {
+        const preset = geo.options.get('preset');
+        if (!preset || !preset.includes('blueCircleDotIcon')) {
+            toRemove.push(geo);
+        }
+    });
+    toRemove.forEach(g => ymap.geoObjects.remove(g));
+
+    ymaps.search('пункт приема вторсырья', {
+        boundedBy: ymap.getBounds(),
+        strictBounds: false,
+        results: 30
+    }).done(res => {
+        res.geoObjects.options.set('preset', 'islands#greenIcon');
+        ymap.geoObjects.add(res.geoObjects);
+        console.log('Найдено точек переработки:', res.geoObjects.getLength());
+    });
+}
 
 function initYandexMap() {
     if (ymap || typeof ymaps === 'undefined') return;
 
+    // Москва по умолчанию, если геолокации еще нет
     ymap = new ymaps.Map('map-container', {
-        center: [55.7913, 37.3662],
-        zoom: 14
+        center: [55.751574, 37.573856],
+        zoom: 12
     });
 
-    // ПРОСТОЙ ПОИСК (стабильный)
-    ymap.search('пункт переработки', {results: 20}).done(result => {
-        result.geoObjects.each(geo => ymap.geoObjects.add(geo));
-    });
-}
+    // Первичный поиск по умолчанию
+    searchRecyclingPoints();
 
-
-function locateMe() {
-    if (!ymap) initYandexMap();
-
-    // ФИКС ШЕРЕМЕТЬЕВО: принудительно обновляем
-    navigator.geolocation.getCurrentPosition(
-        pos => {
-            const coords = [pos.coords.latitude, pos.coords.longitude];
-            ymap.setCenter(coords, 16);
-
-            // Очищаем старые метки пользователя
-            ymap.geoObjects.each(geo => {
-                if (geo.options.get('preset')?.includes('blue')) {
-                    ymap.geoObjects.remove(geo);
-                }
-            });
-
-            ymap.geoObjects.add(new ymaps.Placemark(coords, {
-                hintContent: 'Твоё местоположение'
-            }, {preset: 'islands#blueCircleDotIcon'}));
-        },
-        () => {
-            ymap.setCenter([55.7913, 37.3662], 14); // Куркино
-            Telegram.WebApp.showAlert('Центр на Куркино');
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } // Принудительное обновление
-    );
-}
+    // При каждом изменении границ (пользователь подвигал карту) обновляем точки
+    ymap.events.add('boundschange', () => {
+        searchRecyc
