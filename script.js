@@ -4,12 +4,15 @@ const demoEvents = [
     { title: "Лекция: Zero Waste", date: "28 Января, 18:30", location: "Библиотека №211", category: "Обучение" }
 ];
 
-// 2. Управление экранами
-function showScreen(screenId) {
+// 2. Управление экранами (ИСПРАВЛЕНО: добавлена поддержка старых аргументов)
+function showScreen(screenId, element) {
     const screens = document.querySelectorAll('.screen');
     const tabs = document.querySelectorAll('.tab');
 
+    // Скрываем экраны
     screens.forEach(s => s.style.display = 'none');
+
+    // Снимаем активный класс со всех вкладок
     tabs.forEach(t => t.classList.remove('active'));
 
     const target = document.getElementById(screenId);
@@ -17,21 +20,24 @@ function showScreen(screenId) {
         target.style.display = 'block';
     }
 
-    const activeTab = document.querySelector(`[onclick="showScreen('${screenId}')"]`);
-    if (activeTab) {
-        activeTab.classList.add('active');
+    // Если функция вызвана из HTML с аргументом 'this', или просто ищем по селектору
+    if (element) {
+        element.classList.add('active');
+    } else {
+        const activeTab = document.querySelector(`[onclick*="${screenId}"]`);
+        if (activeTab) activeTab.classList.add('active');
     }
 
     if (window.Telegram?.WebApp?.HapticFeedback) {
         Telegram.WebApp.HapticFeedback.impactOccurred('light');
     }
 
-    // Если перешли на экран мероприятий - отрисовываем
+    // Отрисовка мероприятий
     if (screenId === 'events-screen') {
         renderEvents();
     }
 
-    // Если перешли на экран карты - запускаем Яндекс.Карты
+    // Запуск карты
     if (screenId === 'map-screen') {
         setTimeout(initYandexMap, 400);
     }
@@ -41,7 +47,6 @@ function showScreen(screenId) {
 function renderEvents() {
     const container = document.getElementById('events-list');
     if (!container) return;
-
     container.innerHTML = demoEvents.map(event => `
         <div class="glass-card card" style="margin-bottom: 12px; padding: 20px; border-radius: 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
             <div class="label" style="color: var(--mint); font-size: 10px; font-weight: 800;">${event.category}</div>
@@ -83,11 +88,11 @@ function startTimer(expiry) {
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
         const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-        timerDisplay.textContent = `${h}:${m}:${s}`;
+        if (timerDisplay) timerDisplay.textContent = `${h}:${m}:${s}`;
     }, 1000);
 }
 
-// 5. ГЛАВНАЯ ИНИЦИАЛИЗАЦИЯ
+// 5. Инициализация
 document.addEventListener('DOMContentLoaded', () => {
     if (window.Telegram?.WebApp) {
         Telegram.WebApp.ready();
@@ -99,23 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
     showScreen('main-screen');
 });
 
-// --- БЛОК КАРТЫ (ИСПРАВЛЕННЫЙ И БЕЗОПАСНЫЙ) ---
+// --- КАРТА ---
 let ymap;
-
 function initYandexMap() {
     if (ymap || typeof ymaps === 'undefined') return;
-
-    ymap = new ymaps.Map('map-container', {
-        center: [55.7515, 37.5738], // Москва
-        zoom: 12,
-        controls: []
-    });
-
-    // Однократный поиск при открытии
-    ymaps.search('пункт приема вторсырья', {
-        boundedBy: ymap.getBounds(),
-        results: 20
-    }).done(res => {
+    ymap = new ymaps.Map('map-container', { center: [55.7913, 37.3662], zoom: 14, controls: [] });
+    ymaps.search('пункт приема вторсырья', { boundedBy: ymap.getBounds(), results: 20 }).done(res => {
         res.geoObjects.options.set('preset', 'islands#greenIcon');
         ymap.geoObjects.add(res.geoObjects);
     });
@@ -123,27 +117,13 @@ function initYandexMap() {
 
 function locateMe() {
     if (!ymap) initYandexMap();
-
-    navigator.geolocation.getCurrentPosition(
-        pos => {
-            const coords = [pos.coords.latitude, pos.coords.longitude];
-            ymap.setCenter(coords, 14);
-
-            // Просто добавляем метку, не удаляя ничего (самый безопасный способ)
-            ymap.geoObjects.add(new ymaps.Placemark(coords, {
-                hintContent: 'Твоё местоположение'
-            }, { preset: 'islands#blueCircleDotIcon' }));
-
-            // Ищем пункты в новом месте
-            ymaps.search('пункт приема вторсырья', {
-                boundedBy: ymap.getBounds(),
-                results: 25
-            }).done(res => {
-                res.geoObjects.options.set('preset', 'islands#greenIcon');
-                ymap.geoObjects.add(res.geoObjects);
-            });
-        },
-        () => { alert('Геолокация недоступна'); },
-        { enableHighAccuracy: true, timeout: 5000 }
-    );
+    navigator.geolocation.getCurrentPosition(pos => {
+        const coords = [pos.coords.latitude, pos.coords.longitude];
+        ymap.setCenter(coords, 14);
+        ymap.geoObjects.add(new ymaps.Placemark(coords, {}, {preset: 'islands#blueCircleDotIcon'}));
+        ymaps.search('пункт приема вторсырья', { boundedBy: ymap.getBounds(), results: 20 }).done(res => {
+            res.geoObjects.options.set('preset', 'islands#greenIcon');
+            ymap.geoObjects.add(res.geoObjects);
+        });
+    }, () => { alert('Гео недоступна'); });
 }
