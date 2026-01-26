@@ -8,6 +8,8 @@
     <!-- SDK Telegram и Иконки -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=464d9fee-fc26-4b36-8cc1-883b10336451&lang=ru_RU" type="text/javascript"></script>
+
 </head>
 <body>
     <!-- Фоновый эффект -->
@@ -74,12 +76,20 @@
     </div>
 
 
-    <!-- ЗАГЛУШКИ ДЛЯ ДРУГИХ ЭКРАНОВ -->
+    <!-- КАРТА -->
     <div id="map-screen" class="screen" style="display:none;">
-        <h1 class="title">Карта</h1>
-        <div class="glass-card" style="text-align: center; padding: 40px;">Раздел в разработке 🗺️</div>
+        <h1 style="padding: 0 24px; font-size: 32px;">Карта переработки 🗺️</h1>
+
+        <div class="glass-card" style="margin: 24px; padding: 20px; text-align: center;">
+            <button class="action-btn" onclick="getUserLocation()" style="width: 100%;">
+                📍 Показать ближайшие пункты
+            </button>
+        </div>
+
+        <div id="map-container" class="map-container"></div>
     </div>
 
+    <!-- ЗАГЛУШКИ -->
     <div id="profile-screen" class="screen" style="display:none;">
         <h1 class="title">Профиль</h1>
         <div class="glass-card" style="text-align: center; padding: 40px;">Ваши достижения появятся здесь 🏆</div>

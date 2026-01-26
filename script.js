@@ -30,6 +30,11 @@ function showScreen(screenId) {
     if (screenId === 'events-screen') {
         renderEvents();
     }
+
+    // ДОБАВЛЕНО: Если перешли на экран карты - запускаем Яндекс.Карты
+    if (screenId === 'map-screen') {
+        setTimeout(initYandexMap, 400);
+    }
 }
 
 // 3. Отрисовка мероприятий
@@ -104,3 +109,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // ПОКАЗЫВАЕМ ПЕРВЫЙ ЭКРАН
     showScreen('main-screen');
 });
+
+// ДОБАВЛЕНО: Функции для работы с картой
+let ymap;
+
+function initYandexMap() {
+    if (ymap || typeof ymaps === 'undefined') return;
+
+    ymap = new ymaps.Map('map-container', {
+        center: [55.7913, 37.3662], // Куркино
+        zoom: 14,
+        controls: []
+    });
+
+    const points = [
+        { coords: [55.7932, 37.3681], title: "ЭкоПост", desc: "Пластик, стекло" },
+        { coords: [55.7891, 37.3645], title: "Зеленый двор", desc: "Бумага, металл" }
+    ];
+
+    points.forEach(point => {
+        ymap.geoObjects.add(new ymaps.Placemark(point.coords, {
+            hintContent: point.title,
+            balloonContent: `<b>${point.title}</b><br>${point.desc}`
+        }, { preset: 'islands#greenIcon' }));
+    });
+}
+
+function locateMe() {
+    if (!ymap) initYandexMap();
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            const coords = [pos.coords.latitude, pos.coords.longitude];
+            ymap.setCenter(coords, 15);
+            ymap.geoObjects.add(new ymaps.Placemark(coords, {}, { preset: 'islands#blueCircleDotIcon' }));
+        });
+    }
+}
