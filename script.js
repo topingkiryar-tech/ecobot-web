@@ -106,12 +106,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- КАРТА ---
 let ymap;
+
 function initYandexMap() {
     if (ymap || typeof ymaps === 'undefined') return;
     ymap = new ymaps.Map('map-container', { center: [55.7913, 37.3662], zoom: 14, controls: [] });
+
+    // Ищем и настраиваем точки
     ymaps.search('пункт приема вторсырья', { boundedBy: ymap.getBounds(), results: 20 }).done(res => {
-        res.geoObjects.options.set('preset', 'islands#greenIcon');
-        ymap.geoObjects.add(res.geoObjects);
+        res.geoObjects.each(geo => {
+            geo.options.set({
+                preset: 'islands#greenIcon',
+                openBalloonOnClick: true // ОБЯЗАТЕЛЬНО: разрешаем клик и открытие описания
+            });
+            ymap.geoObjects.add(geo);
+        });
     });
 }
 
@@ -120,10 +128,19 @@ function locateMe() {
     navigator.geolocation.getCurrentPosition(pos => {
         const coords = [pos.coords.latitude, pos.coords.longitude];
         ymap.setCenter(coords, 14);
+
+        // Добавляем метку пользователя
         ymap.geoObjects.add(new ymaps.Placemark(coords, {}, {preset: 'islands#blueCircleDotIcon'}));
+
+        // Ищем точки вокруг нового места и активируем их
         ymaps.search('пункт приема вторсырья', { boundedBy: ymap.getBounds(), results: 20 }).done(res => {
-            res.geoObjects.options.set('preset', 'islands#greenIcon');
-            ymap.geoObjects.add(res.geoObjects);
+            res.geoObjects.each(geo => {
+                geo.options.set({
+                    preset: 'islands#greenIcon',
+                    openBalloonOnClick: true // ОБЯЗАТЕЛЬНО: разрешаем клик
+                });
+                ymap.geoObjects.add(geo);
+            });
         });
     }, () => { alert('Гео недоступна'); });
 }
