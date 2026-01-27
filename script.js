@@ -158,6 +158,7 @@ async function updateUserCity() {
     if (cachedCity) {
         cityEl.textContent = cachedCity;
         container.classList.add('loaded');
+        updateEcoStatus(cachedCity);
     }
 
     try {
@@ -179,13 +180,46 @@ async function updateUserCity() {
         cityEl.textContent = cityName;
         localStorage.setItem('user_city_name', cityName);
         container.classList.add('loaded');
+        updateEcoStatus(cityName);
 
     } catch (err) {
         console.log("Ошибка гео: ", err);
         cityEl.textContent = cachedCity || "Москва"; // Если ошибка, ставим Москву
         container.classList.add('loaded');
+        updateEcoStatus(finalCity);
     }
 }
 
 // Запускаем проверку при каждой загрузке страницы
 document.addEventListener('DOMContentLoaded', updateUserCity);
+
+function updateEcoStatus(city) {
+    const valueElem = document.getElementById('eco-value');
+    const statusElem = document.getElementById('eco-status');
+    const cardElem = document.getElementById('eco-card-main');
+
+    // Имитируем получение данных AQI (индекс качества воздуха)
+    // В Куркино и Химках воздух обычно лучше (15-35), в центре — хуже (40-75)
+    let aqi = (city.includes('Куркино') || city.includes('Химки'))
+        ? Math.floor(Math.random() * 20 + 15)
+        : Math.floor(Math.random() * 35 + 40);
+
+    valueElem.innerText = aqi;
+
+    // Сбрасываем старые классы и ставим новый
+    cardElem.classList.remove('good', 'moderate', 'poor');
+
+    if (aqi < 40) {
+        statusElem.innerText = 'Прекрасно';
+        cardElem.classList.add('good');
+        statusElem.style.color = '#a3ff12'; // Твой зеленый
+    } else if (aqi < 80) {
+        statusElem.innerText = 'Умеренно';
+        cardElem.classList.add('moderate');
+        statusElem.style.color = '#ffeb3b'; // Желтый
+    } else {
+        statusElem.innerText = 'Плохо';
+        cardElem.classList.add('poor');
+        statusElem.style.color = '#ff5252'; // Красный
+    }
+}

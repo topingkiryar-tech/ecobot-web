@@ -25,19 +25,21 @@
         </header>
 
 
-        <div class="top-grid">
-            <!-- Карточка: Статус -->
-            <div class="glass-card status-box">
-                <span class="label">ЭКО-СТАТУС</span>
-                <div class="visual-circle">
-                    <svg viewBox="0 0 36 36" class="chart">
-                        <path class="b" d="M18 2 a 16 16 0 0 1 0 32 a 16 16 0 0 1 0 -32"/>
-                        <path class="c" d="M18 2 a 16 16 0 0 1 0 32 a 16 16 0 0 1 0 -32"/>
-                    </svg>
-                    <div class="num">92</div>
-                </div>
-                <div class="status-title">Прекрасно</div>
+            <div class="top-grid">
+                <!-- Карточка: Статус -->
+                <div id="eco-card-main" class="glass-card status-box">
+                    <span class="label">ЭКО-СТАТУС</span>
+                    <div class="visual-circle">
+                        <svg viewBox="0 0 36 36" class="chart">
+                            <path class="b" d="M18 2 a 16 16 0 0 1 0 32 a 16 16 0 0 1 0 -32"/>
+                            <path id="eco-progress" class="c" d="M18 2 a 16 16 0 0 1 0 32 a 16 16 0 0 1 0 -32"/>
+                        </svg>
+                        <div id="eco-value" class="num">--</div>
+                    </div>
+                <div id="eco-status" class="status-title">Загрузка...</div>
             </div>
+
+
 
             <!-- Карточка: Задание -->
             <div class="glass-card task-box">

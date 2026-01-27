@@ -126,7 +126,6 @@ h1 {
     stroke-width: 4;
     stroke-linecap: round;
     /* Анимация наполнения круга */
-    stroke-dasharray: 92, 100;
     filter: drop-shadow(0 0 8px rgba(193, 255, 114, 0.5));
 }
 
@@ -134,7 +133,6 @@ h1 {
     position: absolute;
     font-size: 24px;
     font-weight: 850;
-    color: var(--mint);
 }
 
 .status-title {
@@ -340,4 +338,40 @@ h1.map-title {
 @keyframes locationPulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.6; }
+}
+
+/* ЦВЕТОВЫЕ СОСТОЯНИЯ ДЛЯ ЭКО-КАРТОЧКИ */
+
+/* Хороший воздух: Зеленое свечение */
+#eco-card-main.good {
+    background: rgba(193, 255, 114, 0.1);
+    border-color: rgba(193, 255, 114, 0.4);
+    box-shadow: 0 0 20px rgba(193, 255, 114, 0.1);
+}
+
+/* Средний воздух: Желтое свечение */
+#eco-card-main.moderate {
+    background: rgba(255, 235, 59, 0.1);
+    border-color: rgba(255, 235, 59, 0.4);
+    box-shadow: 0 0 20px rgba(255, 235, 59, 0.1);
+}
+
+/* Плохой воздух: Красное свечение */
+#eco-card-main.poor {
+    background: rgba(255, 82, 82, 0.1);
+    border-color: rgba(255, 82, 82, 0.4);
+    box-shadow: 0 0 20px rgba(255, 82, 82, 0.1);
+}
+
+/* Анимация для круга (чтобы он тоже менял цвет) */
+#eco-card-main.moderate .num, #eco-card-main.moderate .chart .c {
+    color: #ffeb3b;
+    stroke: #ffeb3b;
+    filter: drop-shadow(0 0 8px rgba(255, 235, 59, 0.5));
+}
+
+#eco-card-main.poor .num, #eco-card-main.poor .chart .c {
+    color: #ff5252;
+    stroke: #ff5252;
+    filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.5));
 }
