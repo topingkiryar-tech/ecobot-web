@@ -2,32 +2,41 @@ async function loadRealEvents() {
     const list = document.getElementById('events-list');
     if (!list) return;
 
-    try {
-        // Пробуем прочитать файл от парсера
-        const response = await fetch('web/events.json');
-        if (!response.ok) throw new Error("Файл не найден");
+    list.innerHTML = '<p style="opacity:0.5;padding:20px;">Загрузка...</p>';
 
+    try {
+        const response = await fetch('./events.json'); // Точка-слэш для GitHub Pages
         const data = await response.json();
-        list.innerHTML = ''; // Очищаем список перед загрузкой
+
+        list.innerHTML = '';
 
         data.forEach(item => {
-            const card = `
-                <div class="event-card" onclick="window.open('${item.link}', '_blank')">
-                    <div class="event-badge">ЭКО-СОБЫТИЕ</div>
-                    <h3>${item.title}</h3>
-                    <div class="event-footer">
-                        <span>📍 ${item.location}</span>
-                        <span>📅 ${item.date}</span>
-                    </div>
-                </div>`;
-            list.insertAdjacentHTML('beforeend', card);
+            const card = document.createElement('div');
+            card.className = 'glass-card event-card';
+            card.style.cursor = 'pointer';
+            card.style.marginBottom = '15px';
+            card.style.padding = '20px';
+            card.style.borderRadius = '24px';
+            card.onclick = () => window.open(item.link, '_blank');
+            card.innerHTML = `
+                <div style="background:var(--mint);color:#000;padding:5px 12px;border-radius:12px;font-size:11px;font-weight:900;width:fit-content;margin-bottom:12px;">
+                    ${item.type}
+                </div>
+                <h3 style="margin:0;font-size:18px;font-weight:800;">${item.title}</h3>
+                <div style="margin-top:12px;font-size:13px;opacity:0.7;display:flex;justify-content:space-between;">
+                    <span>📍 ${item.location}</span>
+                    <span>📅 ${item.date}</span>
+                </div>
+            `;
+            list.appendChild(card);
         });
+
     } catch (e) {
-        // Если файла нет, НЕ рисуем те две карточки, а пишем инструкцию
-        console.log("Ошибка:", e);
-        list.innerHTML = '<p style="text-align:center; opacity:0.5; padding:20px;">Пока событий нет. Запустите parser.py, чтобы они появились!</p>';
+        list.innerHTML = '<p style="text-align:center;opacity:0.5;">Ошибка загрузки. Проверьте events.json</p>';
+        console.error(e);
     }
 }
+
 
 
 
@@ -61,7 +70,7 @@ function showScreen(screenId, element) {
 
     // Отрисовка мероприятий
     if (screenId === 'events-screen') {
-    loadRealEvents(); // Вызываем правильную функцию загрузки!
+        loadRealEvents(); // Вызываем правильную функцию загрузки!
     }
 
     // Запуск карты
