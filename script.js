@@ -224,44 +224,32 @@ function updateEcoStatus(city) {
     }
 }
 
-// ФУНКЦИЯ ЗАГРУЗКИ РЕАЛЬНЫХ МЕРОПРИЯТИЙ
 async function loadRealEvents() {
-    const container = document.getElementById('events-list');
-    if (!container) return;
+    const list = document.getElementById('events-list');
+    if (!list) return;
 
     try {
-        // Загружаем файл, который создал твой парсер
         const response = await fetch('events.json');
-        const events = await response.json();
+        const data = await response.json();
 
-        // Очищаем контейнер от старых пробных карточек
-        container.innerHTML = '';
+        list.innerHTML = ''; // Стираем надпись "Загрузка"
 
-        events.forEach(event => {
-            // Создаем HTML-код каждой карточки
-            const cardHTML = `
-                <div class="glass-card event-card" onclick="window.open('${event.link}', '_blank')" style="margin-bottom: 15px; cursor: pointer;">
-                    <div class="event-badge" style="background: var(--mint); color: #000; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 900; width: fit-content; margin-bottom: 10px; text-transform: uppercase;">
-                        ${event.type || 'Событие'}
+        data.forEach(item => {
+            const card = `
+                <div class="event-card" onclick="window.open('${item.link}', '_blank')">
+                    <div style="background:var(--mint); color:#000; padding:4px 8px; border-radius:8px; font-size:10px; font-weight:900; width:fit-content; margin-bottom:10px;">${item.type || 'ЭКО'}</div>
+                    <h3 style="margin:0; font-size:18px;">${item.title}</h3>
+                    <div style="margin-top:10px; font-size:12px; opacity:0.6; display:flex; justify-content:space-between;">
+                        <span>📍 ${item.location}</span>
+                        <span>📅 ${item.date}</span>
                     </div>
-                    <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 700;">${event.title}</h3>
-                    <div class="event-footer" style="display: flex; justify-content: space-between; font-size: 12px; opacity: 0.6;">
-                        <span><i data-lucide="calendar" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${event.date}</span>
-                        <span><i data-lucide="map-pin" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${event.location}</span>
-                    </div>
-                </div>
-            `;
-            container.insertAdjacentHTML('beforeend', cardHTML);
+                </div>`;
+            list.insertAdjacentHTML('beforeend', card);
         });
-
-        // Рисуем иконки для новых карточек
-        if (window.lucide) lucide.createIcons();
-
-    } catch (error) {
-        console.error("Ошибка загрузки событий:", error);
-        container.innerHTML = '<p style="text-align: center; opacity: 0.5; padding: 20px;">Мероприятия загружаются... Запустите parser.py</p>';
+    } catch (e) {
+        list.innerHTML = '<p style="text-align:center; opacity:0.5;">Запустите parser.py и обновите страницу</p>';
     }
 }
 
-// Запускаем загрузку событий сразу при открытии приложения
+// Запускаем при старте
 document.addEventListener('DOMContentLoaded', loadRealEvents);
