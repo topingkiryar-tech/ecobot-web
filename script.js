@@ -1,3 +1,35 @@
+async function loadRealEvents() {
+    const list = document.getElementById('events-list');
+    if (!list) return;
+
+    try {
+        // Пробуем прочитать файл от парсера
+        const response = await fetch('events.json');
+        if (!response.ok) throw new Error("Файл не найден");
+
+        const data = await response.json();
+        list.innerHTML = ''; // Очищаем список перед загрузкой
+
+        data.forEach(item => {
+            const card = `
+                <div class="event-card" onclick="window.open('${item.link}', '_blank')">
+                    <div class="event-badge">ЭКО-СОБЫТИЕ</div>
+                    <h3>${item.title}</h3>
+                    <div class="event-footer">
+                        <span>📍 ${item.location}</span>
+                        <span>📅 ${item.date}</span>
+                    </div>
+                </div>`;
+            list.insertAdjacentHTML('beforeend', card);
+        });
+    } catch (e) {
+        // Если файла нет, НЕ рисуем те две карточки, а пишем инструкцию
+        console.log("Ошибка:", e);
+        list.innerHTML = '<p style="text-align:center; opacity:0.5; padding:20px;">Пока событий нет. Запустите parser.py, чтобы они появились!</p>';
+    }
+}
+
+
 
 // 2. Управление экранами (ИСПРАВЛЕНО: добавлена поддержка старых аргументов)
 function showScreen(screenId, element) {
@@ -218,33 +250,3 @@ function updateEcoStatus(city) {
         statusElem.style.color = '#ff5252'; // Красный
     }
 }
-
-async function loadRealEvents() {
-    const list = document.getElementById('events-list');
-    if (!list) return;
-
-    try {
-        const response = await fetch('events.json');
-        const data = await response.json();
-
-        list.innerHTML = ''; // Стираем надпись "Загрузка"
-
-        data.forEach(item => {
-            const card = `
-                <div class="event-card" onclick="window.open('${item.link}', '_blank')">
-                    <div style="background:var(--mint); color:#000; padding:4px 8px; border-radius:8px; font-size:10px; font-weight:900; width:fit-content; margin-bottom:10px;">${item.type || 'ЭКО'}</div>
-                    <h3 style="margin:0; font-size:18px;">${item.title}</h3>
-                    <div style="margin-top:10px; font-size:12px; opacity:0.6; display:flex; justify-content:space-between;">
-                        <span>📍 ${item.location}</span>
-                        <span>📅 ${item.date}</span>
-                    </div>
-                </div>`;
-            list.insertAdjacentHTML('beforeend', card);
-        });
-    } catch (e) {
-        list.innerHTML = '<p style="text-align:center; opacity:0.5;">Запустите parser.py и обновите страницу</p>';
-    }
-}
-
-// Запускаем при старте
-document.addEventListener('DOMContentLoaded', loadRealEvents);
