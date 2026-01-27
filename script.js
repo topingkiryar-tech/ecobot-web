@@ -61,7 +61,7 @@ function showScreen(screenId, element) {
 
     // Отрисовка мероприятий
     if (screenId === 'events-screen') {
-        renderEvents();
+    loadRealEvents(); // Вызываем правильную функцию загрузки!
     }
 
     // Запуск карты
@@ -70,19 +70,6 @@ function showScreen(screenId, element) {
     }
 }
 
-// 3. Отрисовка мероприятий
-function renderEvents() {
-    const container = document.getElementById('events-list');
-    if (!container) return;
-    container.innerHTML = demoEvents.map(event => `
-        <div class="glass-card card" style="margin-bottom: 12px; padding: 20px; border-radius: 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
-            <div class="label" style="color: var(--mint); font-size: 10px; font-weight: 800;">${event.category}</div>
-            <h3 style="margin: 10px 0; font-size: 18px;">${event.title}</h3>
-            <p style="font-size: 14px; opacity: 0.7; margin: 5px 0;">📍 ${event.location}</p>
-            <div style="color: var(--mint); font-weight: 700; margin-top: 10px;">${event.date}</div>
-        </div>
-    `).join('');
-}
 
 // 4. Логика задания
 function completeTask() {
@@ -209,12 +196,15 @@ async function updateUserCity() {
         container.classList.add('loaded');
         updateEcoStatus(cityName);
 
+    // Исправь в блоке catch функции updateUserCity:
     } catch (err) {
         console.log("Ошибка гео: ", err);
-        cityEl.textContent = cachedCity || "Москва"; // Если ошибка, ставим Москву
+        const finalCity = cachedCity || "Москва";
+        cityEl.textContent = finalCity;
         container.classList.add('loaded');
         updateEcoStatus(finalCity);
     }
+
 }
 
 // Запускаем проверку при каждой загрузке страницы
