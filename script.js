@@ -144,3 +144,48 @@ function locateMe() {
         });
     }, () => { alert('Гео недоступна'); });
 }
+
+// ФУНКЦИЯ АВТООПРЕДЕЛЕНИЯ ГОРОДА
+async function updateUserCity() {
+    const cityEl = document.getElementById('current-city');
+    const container = document.getElementById('location-container');
+    const MY_KEY = "464d9fee-fc26-4b36-8cc1-883b10336451";
+
+    if (!cityEl || !container) return;
+
+    // 1. Пытаемся взять из памяти, если уже заходили сегодня
+    const cachedCity = localStorage.getItem('user_city_name');
+    if (cachedCity) {
+        cityEl.textContent = cachedCity;
+        container.classList.add('loaded');
+    }
+
+    try {
+        // 2. Получаем координаты устройства
+        const pos = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+        });
+
+        const { latitude, longitude } = pos.coords;
+
+        // 3. Запрос к Яндексу (Геокодер)
+        const response = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${MY_KEY}&geocode=${longitude},${latitude}&format=json&kind=locality&results=1`);
+        const data = await response.json();
+
+        // Достаем название города из сложного ответа Яндекса
+        const cityName = data.response.GeoObjectCollection.featureMember[0]?.GeoObject.name || "Москва";
+
+        // 4. Выводим результат и сохраняем
+        cityEl.textContent = cityName;
+        localStorage.setItem('user_city_name', cityName);
+        container.classList.add('loaded');
+
+    } catch (err) {
+        console.log("Ошибка гео: ", err);
+        cityEl.textContent = cachedCity || "Москва"; // Если ошибка, ставим Москву
+        container.classList.add('loaded');
+    }
+}
+
+// Запускаем проверку при каждой загрузке страницы
+document.addEventListener('DOMContentLoaded', updateUserCity);

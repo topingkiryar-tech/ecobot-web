@@ -318,3 +318,26 @@ h1.map-title {
     margin: 10px auto 140px !important; /* Большой отступ снизу для Tab Bar */
     z-index: 100 !important;
 }
+
+/* Анимация для города */
+#location-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 24px;
+    border: 1px solid rgba(193,255,114,0.3);
+    animation: locationPulse 2s infinite;
+    cursor: pointer;
+}
+
+#location-container.loaded {
+    animation: none;
+    border-color: var(--mint);
+}
+
+@keyframes locationPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
