@@ -4,7 +4,7 @@ async function loadRealEvents() {
 
     try {
         // Пробуем прочитать файл от парсера
-        const response = await fetch('events.json');
+        const response = await fetch('web/events.json');
         if (!response.ok) throw new Error("Файл не найден");
 
         const data = await response.json();
