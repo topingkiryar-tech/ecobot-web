@@ -375,3 +375,17 @@ h1.map-title {
     stroke: #ff5252;
     filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.5));
 }
+
+/* Фикс темного квадрата в блоке эко-индекса */
+.visual-circle,
+.visual-circle svg,
+.chart {
+    background: transparent !important;
+    background-color: rgba(0,0,0,0) !important;
+    border: none !important;
+    box-shadow: none !important; /* Убирает возможные тени-рамки */
+}
+
+.chart .c {
+    filter: none !important; /* Убирает свечение, которое глючит на мобилках */
+}
