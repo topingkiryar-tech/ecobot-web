@@ -1,8 +1,3 @@
-// 1. Демо-данные
-const demoEvents = [
-    { title: "Сбор пластика в Куркино", date: "25 Января, 12:00", location: "Парк Дубрава", category: "Волонтерство" },
-    { title: "Лекция: Zero Waste", date: "28 Января, 18:30", location: "Библиотека №211", category: "Обучение" }
-];
 
 // 2. Управление экранами (ИСПРАВЛЕНО: добавлена поддержка старых аргументов)
 function showScreen(screenId, element) {
